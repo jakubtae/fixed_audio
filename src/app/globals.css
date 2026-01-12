@@ -3,6 +3,17 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer utilities {
+  .small-caps {
+    font-variant: small-caps;
+  }
+  .flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

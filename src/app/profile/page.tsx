@@ -10,6 +10,11 @@ export default function Profile() {
       {session?.user && (
         <div className="flex w-full flex-col gap-2 items-center justify-center py-10">
           <p className="font-semibold">Signed in as {session.user.email}</p>{" "}
+          {session.user.role && session.user.role === "ADMIN" && (
+            <>
+              <p className="font-semibold">You are an Admin</p>
+            </>
+          )}
           <Button
             type="submit"
             variant="destructive"

@@ -16,7 +16,7 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       role: {
-        type: "string",
+        type: ["USER", "ADMIN"],
         required: false,
         defaultValue: "USER",
         input: false, // allow user to set role - false with hide this field,
@@ -24,3 +24,5 @@ export const auth = betterAuth({
     },
   },
 });
+
+type Session = typeof auth.$Infer.Session;

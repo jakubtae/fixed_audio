@@ -21,7 +21,8 @@ export async function proxy(request: NextRequest) {
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
   const isAdminRoute = adminRoutes.includes(nextUrl.pathname);
 
-  const skipAdmin = process.env.NODE_ENV === "development";
+  //   const skipAdmin = process.env.NODE_ENV === "development";
+  const skipAdmin = false;
 
   if (isApiAuthRoute) {
     return;

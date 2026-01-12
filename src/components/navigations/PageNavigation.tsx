@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 // import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { authClient } from "@/auth-client";
+import Image from "next/image";
 
 export const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
@@ -28,7 +29,7 @@ export const Navigation = () => {
 
   return (
     <nav>
-      <div className="flex w-full px-1 lg:px-8 flex-row justify-between items-center py-2 relative bg-[#5A7863] text-[#EBF4DD] text-xl shadow-[inset_0px_-4px_13px_-44px_rgba(0,0,0,0.1)]">
+      <div className="flex w-full px-1 lg:px-8 flex-row justify-between items-center py-2 relative bg-[#FF5A5A] text-[#EBF4DD] text-xl shadow-[inset_0px_-4px_13px_-44px_rgba(0,0,0,0.1)]">
         {/* Hamburger Menu Button */}
         {showHamburger && (
           <Button
@@ -63,7 +64,9 @@ export const Navigation = () => {
             className="text-4xl lg:text-2xl font-bold text-inherit"
             asChild
           >
-            <Link href="/">Viral Audio</Link>
+            <Link href="/">
+              <Image src="/nbs.png" alt="NBS Logo" width={107} height={60} />
+            </Link>
           </Button>
           {/* Page Navigation - Hidden on small screens when hamburger is shown */}
           {!showHamburger && (
@@ -91,7 +94,7 @@ export const Navigation = () => {
         {/* Vertical Dropdown Menu */}
         {menuOpen && showHamburger && (
           <div className="absolute top-full left-0 w-full shadow-lg z-50 border-t">
-            <div className="flex flex-col p-4 gap-2 bg-[#5A7863]">
+            <div className="flex flex-col p-4 gap-2 bg-[#FF5A5A]">
               <Button
                 variant="link_inherit"
                 asChild

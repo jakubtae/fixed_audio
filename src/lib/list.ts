@@ -1,5 +1,7 @@
+import { Sound } from "./schemas/sound.types";
+
 export interface Audio {
   soundId: string;
   title: string;
-  type: "music" | "game" | "meme" | "movies" | "other";
+  type: Sound["category"];
 }

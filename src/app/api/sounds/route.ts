@@ -36,7 +36,7 @@ export async function GET(req: Request) {
         soundId: sound.soundId,
         createdAt: sound.createdAt,
         updatedAt: sound.updatedAt,
-        type: sound.type,
+        category: sound.category,
       })),
       hasMore,
       nextCursor: hasMore ? items[items.length - 1]._id.toString() : null,

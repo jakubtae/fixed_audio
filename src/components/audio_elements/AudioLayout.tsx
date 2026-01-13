@@ -78,7 +78,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
             key={audio._id} // Use actual sound ID instead of index
             title={audio.title}
             soundId={audio.soundId}
-            type={audio.type as "music" | "game" | "meme" | "movies" | "other"}
+            type={audio.category}
             id={i + 1}
             cdnUrl={cdnUrl}
           />

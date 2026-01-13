@@ -4,7 +4,22 @@ export interface Sound {
   soundId: string;
   createdAt: Date;
   updatedAt: Date;
-  type?: string;
+  category:
+    | "Anime & Manga"
+    | "Games"
+    | "Memes"
+    | "Movies"
+    | "Music"
+    | "Politics"
+    | "Pranks"
+    | "Reactions"
+    | "Sound Effects"
+    | "Sports"
+    | "Television"
+    | "Tiktok Trends"
+    | "Viral"
+    | "other"
+    | "Whatsapp Audios";
 }
 
 // For MongoDB operations, we need to handle ObjectId

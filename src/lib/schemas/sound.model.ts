@@ -74,7 +74,7 @@ export class SoundModel {
       soundId: doc.soundId,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
-      type: doc.type,
+      category: doc.category,
     };
   }
 }

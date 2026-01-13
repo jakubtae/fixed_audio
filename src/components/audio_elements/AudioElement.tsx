@@ -36,13 +36,13 @@ import {
 } from "@/components/ui/dialog";
 import AnimatedAudioPlayer from "./AudioPlayer";
 
-const gradientMap: Record<Audio["type"], string> = {
-  game: "linear-gradient(to bottom, #b91c1c, #000000)", // red → black
-  meme: "linear-gradient(to bottom, #facc15, #f97316)", // yellow → orange
-  movies: "linear-gradient(to bottom, #2563eb, #7c3aed)", // blue → purple
-  music: "linear-gradient(to bottom, #22c55e, #16a34a)", // green → darker green
-  other: "linear-gradient(to bottom, #e5e7eb, #9ca3af)", // gray → white
-};
+// const gradientMap: Record<Audio["type"], string> = {
+//   game: "linear-gradient(to bottom, #b91c1c, #000000)", // red → black
+//   meme: "linear-gradient(to bottom, #facc15, #f97316)", // yellow → orange
+//   movies: "linear-gradient(to bottom, #2563eb, #7c3aed)", // blue → purple
+//   music: "linear-gradient(to bottom, #22c55e, #16a34a)", // green → darker green
+//   other: "linear-gradient(to bottom, #e5e7eb, #9ca3af)", // gray → white
+// };
 
 const AudioElement = ({
   title,
@@ -55,18 +55,11 @@ const AudioElement = ({
   const [ShowCustomizeDialog, setShowCustomizeDialog] = useState(false);
   const [ShowShareDialog, setShowShareDialog] = useState(false);
   const [ShowReportDialog, setShowReportDialog] = useState(false);
-
-  const getAllSoundTypes = (): Array<Audio["type"]> => {
-    return ["music", "game", "meme", "movies", "other"];
-  };
-
-  const soundType =
-    type ||
-    getAllSoundTypes()[Math.floor(Math.random() * getAllSoundTypes().length)];
-
+  if (!type) {
+    type = "other";
+  }
   const bgImage = useMemo(() => {
-    const variant = Math.random() > 0.5 ? 1 : 2;
-    return `/${soundType}_${variant}.svg`;
+    return `/${type}.svg`;
   }, []); // ← empty deps = run once per mount
 
   return (
@@ -81,7 +74,7 @@ const AudioElement = ({
         <div
           className="w-8.75 h-8.75 rounded
              shadow-[0_0px_4px_rgba(255,255,255,0.2)] flex-center"
-          style={{ background: gradientMap[soundType] }}
+          style={{ background: "rgba(255, 255, 255, 0.3)" }}
         >
           <AnimatedAudioPlayer src={audioUrl} />
         </div>
@@ -93,7 +86,7 @@ const AudioElement = ({
       <div className="flex-center gap-2">
         <Badge className="py-1 px-4 text-xs bg-[#444444] text-white rounded-full">
           {" "}
-          {soundType}
+          {type}
         </Badge>
         <Button
           variant="secondary"

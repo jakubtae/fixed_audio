@@ -29,7 +29,7 @@ export const Navigation = () => {
 
   return (
     <nav>
-      <div className="flex w-full px-1 lg:px-8 flex-row justify-between items-center py-2 relative bg-[#FF5A5A] text-[#EBF4DD] text-xl shadow-[inset_0px_-4px_13px_-44px_rgba(0,0,0,0.1)]">
+      <div className="flex w-full px-1 lg:px-8 flex-row justify-between items-center py-2 relative bg-[#942424] text-[#EBF4DD] text-xl shadow-[inset_0px_-4px_13px_-44px_rgba(0,0,0,0.1)]">
         {/* Hamburger Menu Button */}
         {showHamburger && (
           <Button

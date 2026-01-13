@@ -71,11 +71,11 @@ export const Navigation = () => {
           {/* Page Navigation - Hidden on small screens when hamburger is shown */}
           {!showHamburger && (
             <div className="flex flex-1 justify-end items-center gap-4 px-2">
-              <Button variant="link_inherit" asChild className="text-lg">
+              {/* <Button variant="link_inherit" asChild className="text-lg">
                 <Link href="/plugins">Plugins</Link>
-              </Button>
+              </Button> */}
               <Button variant="link_inherit" asChild className="text-lg">
-                <Link href="/editor">Editor</Link>
+                <Link href="/search">Search</Link>
               </Button>
               <div className="flex gap-2 md:flex-row flex-col">
                 {!showHamburger && (
@@ -95,7 +95,7 @@ export const Navigation = () => {
         {menuOpen && showHamburger && (
           <div className="absolute top-full left-0 w-full shadow-lg z-50 border-t">
             <div className="flex flex-col p-4 gap-2 bg-[#FF5A5A]">
-              <Button
+              {/* <Button
                 variant="link_inherit"
                 asChild
                 className="justify-start py-3"
@@ -103,14 +103,14 @@ export const Navigation = () => {
                 <Link href="/materials" onClick={() => setMenuOpen(false)}>
                   Plugins
                 </Link>
-              </Button>
+              </Button> */}
               <Button
                 variant="link_inherit"
                 asChild
                 className="justify-start py-3"
               >
-                <Link href="/materials" onClick={() => setMenuOpen(false)}>
-                  Editor
+                <Link href="/search" onClick={() => setMenuOpen(false)}>
+                  Search
                 </Link>
               </Button>
               <Button

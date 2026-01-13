@@ -75,6 +75,8 @@ export class SoundModel {
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
       category: doc.category,
+      views: doc.views,
+      likes: doc.likes,
     };
   }
 }

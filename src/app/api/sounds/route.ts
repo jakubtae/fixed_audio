@@ -1,45 +1,55 @@
 import { NextResponse } from "next/server";
 import { clientPromise } from "@/lib/db";
-import { ObjectId } from "mongodb";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-
-  const limit = Number(searchParams.get("limit") ?? 12);
-  const cursor = searchParams.get("cursor"); // last _id from previous page
-  console.log("Received cursor:", cursor);
-
   try {
+    const { searchParams } = new URL(req.url);
+
+    const limit = Number(searchParams.get("limit") ?? 12);
+    const page = Number(searchParams.get("page") ?? 0); // page-based pagination
+
+    // Filters
+    const type = searchParams.get("type"); // category filter
+
+    // Sorting
+    const sortKey =
+      (searchParams.get("sortKey") as "views" | "likes" | "createdAt") ||
+      "createdAt";
+    const sortOrder: 1 | -1 = searchParams.get("sortOrder") === "asc" ? 1 : -1;
+
     const client = await clientPromise;
     const db = client.db("Dev");
     const soundsCollection = db.collection("Sound");
 
+    // Build query
     const query: any = {};
+    if (type) query.category = type;
 
-    if (cursor) {
-      query._id = { $lt: new ObjectId(cursor) };
-    }
-
+    // Fetch data
     const sounds = await soundsCollection
       .find(query)
-      .sort({ createdAt: -1 })
-      .limit(limit + 1) // fetch one extra
+      .sort({ [sortKey]: sortOrder })
+      .skip(page * limit)
+      .limit(limit)
       .toArray();
 
-    const hasMore = sounds.length > limit;
-    const items = hasMore ? sounds.slice(0, limit) : sounds;
+    // Check if there are more items
+    const totalInQuery = await soundsCollection.countDocuments(query);
+    const hasMore = (page + 1) * limit < totalInQuery;
 
     return NextResponse.json({
-      items: items.map((sound) => ({
+      items: sounds.map((sound) => ({
         _id: sound._id.toString(),
         title: sound.title,
         soundId: sound.soundId,
+        category: sound.category,
+        views: sound.views,
+        likes: sound.likes,
         createdAt: sound.createdAt,
         updatedAt: sound.updatedAt,
-        category: sound.category,
       })),
       hasMore,
-      nextCursor: hasMore ? items[items.length - 1]._id.toString() : null,
+      page: page + 1, // next page number
     });
   } catch (error) {
     console.error("Error fetching sounds:", error);

@@ -4,6 +4,8 @@ export interface Sound {
   soundId: string;
   createdAt: Date;
   updatedAt: Date;
+  views: number;
+  likes: number;
   category:
     | "Anime & Manga"
     | "Games"

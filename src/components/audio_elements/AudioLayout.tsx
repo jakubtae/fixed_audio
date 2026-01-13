@@ -4,92 +4,111 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import AudioElement from "./AudioElement";
 import { Sound } from "@/lib/schemas/sound.types";
 
+// Derive categories directly from the Sound type
+const CATEGORY_OPTIONS: Sound["category"][] = [
+  "Anime & Manga",
+  "Games",
+  "Memes",
+  "Movies",
+  "Music",
+  "Politics",
+  "Pranks",
+  "Reactions",
+  "Sound Effects",
+  "Sports",
+  "Television",
+  "Tiktok Trends",
+  "Viral",
+  "other",
+  "Whatsapp Audios",
+];
+
 export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
   const [sounds, setSounds] = useState<Sound[]>([]);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [page, setPage] = useState(0); // page-based pagination
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // Create a ref for the sentinel element
+  // Filter + sort state
+  const [selectedType, setSelectedType] = useState<Sound["category"] | "">("");
+  const [sortKey, setSortKey] = useState<"views" | "likes" | "createdAt">(
+    "views"
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
   const sentinelRef = useRef<HTMLDivElement>(null);
-  // Keep track of previous fetch to avoid duplicate calls
   const fetchingRef = useRef(false);
 
-  const fetchSounds = useCallback(async (cursor: string | null = null) => {
-    // Prevent multiple simultaneous requests
-    if (fetchingRef.current) return;
+  // Fetch sounds from API
+  const fetchSounds = useCallback(
+    async (pageNumber: number = 0, reset = false) => {
+      if (fetchingRef.current) return;
 
-    fetchingRef.current = true;
-    setLoading(true);
+      fetchingRef.current = true;
+      setLoading(true);
 
-    try {
-      const params = new URLSearchParams();
-      params.append("limit", "12"); // Match server default
-      if (cursor) {
-        params.append("cursor", cursor);
+      try {
+        const params = new URLSearchParams();
+        params.append("limit", "12");
+        params.append("page", pageNumber.toString());
+        if (selectedType) params.append("type", selectedType);
+        params.append("sortKey", sortKey);
+        params.append("sortOrder", sortOrder);
+
+        const res = await fetch(`/api/sounds?${params.toString()}`);
+        if (!res.ok) throw new Error("Failed to fetch sounds");
+
+        const data = await res.json();
+
+        setSounds((prev) => (reset ? data.items : [...prev, ...data.items]));
+        setPage(data.page);
+        setHasMore(data.hasMore);
+      } catch (error) {
+        console.error("Error fetching sounds:", error);
+      } finally {
+        setLoading(false);
+        fetchingRef.current = false;
+        setIsInitialLoad(false);
       }
+    },
+    [selectedType, sortKey, sortOrder]
+  );
 
-      const res = await fetch(`/api/sounds?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-
-      const data = await res.json();
-      console.log("Fetched data:", data);
-
-      setSounds((prev) => {
-        // Avoid duplicates by checking if sound already exists
-        console.log(prev);
-        const newSounds = data.items.filter(
-          (newSound: Sound) =>
-            !prev.some((existing) => existing._id === newSound._id)
-        );
-        return [...prev, ...newSounds];
-      });
-
-      setNextCursor(data.nextCursor);
-      setHasMore(!!data.nextCursor);
-    } catch (error) {
-      console.error("Error fetching sounds:", error);
-    } finally {
-      setLoading(false);
-      fetchingRef.current = false;
-      setIsInitialLoad(false);
-    }
-  }, []);
-
+  // Initial fetch
   useEffect(() => {
-    fetchSounds(null); // Initial fetch
+    fetchSounds(0, true);
   }, [fetchSounds]);
 
-  // Intersection Observer setup
+  // Refetch on filter/sort change
+  useEffect(() => {
+    setSounds([]);
+    setPage(0);
+    setHasMore(true);
+    fetchSounds(0, true);
+  }, [selectedType, sortKey, sortOrder, fetchSounds]);
+
+  // Infinite scroll
   useEffect(() => {
     if (!hasMore || loading) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting && nextCursor && !fetchingRef.current) {
-          fetchSounds(nextCursor);
+        if (entry.isIntersecting && !fetchingRef.current) {
+          fetchSounds(page);
         }
       },
-      {
-        root: null, // Use viewport
-        rootMargin: "100px", // Load when sentinel is 100px from viewport
-        threshold: 0.1,
-      }
+      { root: null, rootMargin: "100px", threshold: 0.1 }
     );
 
     const currentSentinel = sentinelRef.current;
-    if (currentSentinel) {
-      observer.observe(currentSentinel);
-    }
+    if (currentSentinel) observer.observe(currentSentinel);
 
     return () => {
-      if (currentSentinel) {
-        observer.unobserve(currentSentinel);
-      }
+      if (currentSentinel) observer.unobserve(currentSentinel);
     };
-  }, [hasMore, loading, nextCursor, fetchSounds]);
+  }, [hasMore, loading, page, fetchSounds]);
 
   if (isInitialLoad) {
     return (
@@ -108,6 +127,40 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
 
   return (
     <div className="w-full max-w-6xl flex-center flex-col gap-6">
+      {/* Filter & Sort Controls */}
+      <div className="flex flex-wrap gap-4 w-full md:w-2/3 mb-4">
+        <select
+          className="border rounded px-3 py-2"
+          value={selectedType}
+          onChange={(e) =>
+            setSelectedType(e.target.value as Sound["category"] | "")
+          }
+        >
+          <option value="">All Types</option>
+          {CATEGORY_OPTIONS.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="border rounded px-3 py-2"
+          value={`${sortKey}-${sortOrder}`}
+          onChange={(e) => {
+            const [key, order] = e.target.value.split("-");
+            setSortKey(key as "views" | "likes" | "createdAt");
+            setSortOrder(order as "asc" | "desc");
+          }}
+        >
+          <option value="views-desc">Most Viewed</option>
+          <option value="views-asc">Least Viewed</option>
+          <option value="likes-desc">Most Liked</option>
+          <option value="likes-asc">Least Liked</option>
+        </select>
+      </div>
+
+      {/* Audio Elements */}
       <div className="flex flex-col gap-2 w-full md:w-2/3">
         {sounds.map((audio, i) => (
           <AudioElement
@@ -120,7 +173,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
           />
         ))}
 
-        {/* Sentinel element for infinite scroll */}
+        {/* Sentinel for infinite scroll */}
         {hasMore && (
           <div
             ref={sentinelRef}
@@ -135,7 +188,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
         )}
       </div>
 
-      {/* Loading indicator at bottom */}
+      {/* Bottom loading / end message */}
       {loading && !isInitialLoad && (
         <div className="text-gray-500 text-sm py-4">Loading more sounds...</div>
       )}

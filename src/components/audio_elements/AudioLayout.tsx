@@ -4,6 +4,16 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import AudioElement from "./AudioElement";
 import { Sound } from "@/lib/schemas/sound.types";
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 // Derive categories directly from the Sound type
 const CATEGORY_OPTIONS: Sound["category"][] = [
   "Anime & Manga",
@@ -129,35 +139,41 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
     <div className="w-full max-w-6xl flex-center flex-col gap-6">
       {/* Filter & Sort Controls */}
       <div className="flex flex-wrap gap-4 w-full md:w-2/3 mb-4">
-        <select
-          className="border rounded px-3 py-2"
-          value={selectedType}
-          onChange={(e) =>
-            setSelectedType(e.target.value as Sound["category"] | "")
+        <Select
+          onValueChange={(value) =>
+            setSelectedType(value as Sound["category"] | "")
           }
+          value={selectedType}
         >
-          <option value="">All Types</option>
-          {CATEGORY_OPTIONS.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-
-        <select
-          className="border rounded px-3 py-2"
-          value={`${sortKey}-${sortOrder}`}
-          onChange={(e) => {
-            const [key, order] = e.target.value.split("-");
+          <SelectTrigger>
+            <SelectValue placeholder="Filter" />
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORY_OPTIONS.map((cat) => (
+              <SelectItem key={cat} value={cat}>
+                {cat}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          onValueChange={(value) => {
+            const [key, order] = value.split("-");
             setSortKey(key as "views" | "likes" | "createdAt");
             setSortOrder(order as "asc" | "desc");
           }}
+          value={`${sortKey}-${sortOrder}`}
         >
-          <option value="views-desc">Most Viewed</option>
-          <option value="views-asc">Least Viewed</option>
-          <option value="likes-desc">Most Liked</option>
-          <option value="likes-asc">Least Liked</option>
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="Sort" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="views-desc">Most Viewed</SelectItem>
+            <SelectItem value="views-asc">Least Viewed</SelectItem>
+            <SelectItem value="likes-desc">Most Liked</SelectItem>
+            <SelectItem value="likes-asc">Least Liked</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Audio Elements */}

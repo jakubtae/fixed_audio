@@ -21,6 +21,10 @@ export const auth = betterAuth({
         defaultValue: "USER",
         input: false, // allow user to set role - false with hide this field,
       },
+      liked: {
+        type: "string[]",
+        required: false,
+      },
     },
   },
 });

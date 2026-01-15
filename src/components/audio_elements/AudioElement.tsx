@@ -16,6 +16,7 @@ import {
 import { Button } from "../ui/button";
 import {
   Angry,
+  ExternalLink,
   Heart,
   MoreVerticalIcon,
   Paintbrush,
@@ -38,6 +39,7 @@ import {
 } from "@/components/ui/dialog";
 import AnimatedAudioPlayer from "./AudioPlayer";
 import { gradientMap } from "@/lib/typeColors";
+import Link from "next/link";
 
 // const gradientMap: Record<Audio["type"], string> = {
 //   game: "linear-gradient(to bottom, #b91c1c, #000000)", // red → black
@@ -170,6 +172,12 @@ const AudioElement = ({
               >
                 <Share2 />
                 Share
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/sounds/${soundId}`} target="_blank">
+                  <ExternalLink />
+                  Open in new tab
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setShowCustomizeDialog(true)}>
                 <Paintbrush />

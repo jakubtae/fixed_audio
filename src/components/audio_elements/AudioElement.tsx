@@ -40,6 +40,7 @@ import {
 import AnimatedAudioPlayer from "./AudioPlayer";
 import { gradientMap } from "@/lib/typeColors";
 import Link from "next/link";
+import ReportDialog from "./ReportDialog";
 
 // const gradientMap: Record<Audio["type"], string> = {
 //   game: "linear-gradient(to bottom, #b91c1c, #000000)", // red → black
@@ -250,6 +251,11 @@ const AudioElement = ({
             </DialogHeader>
           </DialogContent>
         </Dialog>
+        <ReportDialog
+          ShowReportDialog={ShowReportDialog}
+          setShowReportDialog={setShowReportDialog}
+          soundId={soundId}
+        />
       </div>
     </div>
   );

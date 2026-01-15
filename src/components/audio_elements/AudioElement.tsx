@@ -88,7 +88,7 @@ const AudioElement = ({
   const handleShare = async (title: string, link: string) => {
     await navigator.share({
       title: title,
-      text: "Check out this sound 🔊",
+      text: "Check out this sound 🔊 - " + title,
       url: link,
     });
   };

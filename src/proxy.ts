@@ -6,6 +6,7 @@ import {
   adminRoutes,
   apiAuthPrefix,
   authRoutes,
+  publicRoutePrefixes,
   publicRoutes,
 } from "@/routes";
 
@@ -17,7 +18,11 @@ export async function proxy(request: NextRequest) {
   const { nextUrl } = request;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const pathname = nextUrl.pathname;
+
+  const isPublicRoute =
+    publicRoutes.includes(pathname) ||
+    publicRoutePrefixes.some((prefix) => pathname.startsWith(prefix));
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
   const isAdminRoute = adminRoutes.includes(nextUrl.pathname);
 

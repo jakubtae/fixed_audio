@@ -16,6 +16,8 @@ export const publicRoutes = [
   "/api/sounds",
 ];
 
+export const publicRoutePrefixes = ["/api/sounds", "/sounds"];
+
 /**
  * An array of routes that are used for authentication
  * Those routes will redirect logged in users to /dashboard

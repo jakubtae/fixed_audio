@@ -41,6 +41,7 @@ import AnimatedAudioPlayer from "./AudioPlayer";
 import { gradientMap } from "@/lib/typeColors";
 import Link from "next/link";
 import ReportDialog from "./ReportDialog";
+import EmbedButtonEditor from "./IFramePreview";
 
 // const gradientMap: Record<Audio["type"], string> = {
 //   game: "linear-gradient(to bottom, #b91c1c, #000000)", // red → black
@@ -206,8 +207,7 @@ const AudioElement = ({
             <DialogHeader>
               <DialogTitle>Customize your button</DialogTitle>
               <DialogDescription>
-                Make this button looke exactly how you WANT it to be on your
-                website.
+                <EmbedButtonEditor soundId={soundId} initialText={title} />
               </DialogDescription>
             </DialogHeader>
             {/* <FieldGroup className="py-3">

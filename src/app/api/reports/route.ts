@@ -68,7 +68,6 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-
     const id = searchParams.get("id");
     const status = searchParams.get("status");
     const soundId = searchParams.get("soundId");
@@ -100,7 +99,7 @@ export async function GET(req: Request) {
     if (soundId) query.soundId = soundId;
 
     const items = await reports.find(query).sort({ createdAt: -1 }).toArray();
-
+    console.log(items);
     return NextResponse.json(
       items.map((r) => ({
         ...r,
@@ -122,11 +121,10 @@ export async function GET(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const body = await req.json();
-    const { reportId, status } = body;
-
-    if (!reportId || !status) {
+    const { id, status } = body;
+    if (!id || !status) {
       return NextResponse.json(
-        { error: "reportId and status are required" },
+        { error: "id and status are required" },
         { status: 400 }
       );
     }
@@ -136,7 +134,7 @@ export async function PATCH(req: Request) {
     const reports = db.collection("reports");
 
     const result = await reports.updateOne(
-      { _id: new ObjectId(reportId) },
+      { _id: new ObjectId(id) },
       {
         $set: {
           status,

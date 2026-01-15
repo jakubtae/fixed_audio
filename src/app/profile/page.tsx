@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import GoogleButton from "@/components/auth/GoogleButton";
 import { authClient } from "@/auth-client";
+import Link from "next/link";
 export default function Profile() {
   const { data: session } = authClient.useSession();
 
@@ -13,6 +14,9 @@ export default function Profile() {
           {session.user.role && session.user.role === "ADMIN" && (
             <>
               <p className="font-semibold">You are an Admin</p>
+              <Link href="/profile/admin">
+                <Button variant="destructive">Admin Dashboard</Button>
+              </Link>
             </>
           )}
           <Button

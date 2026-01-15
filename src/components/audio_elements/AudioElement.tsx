@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 import { Audio } from "@/lib/list";
 type AudioElementProps = Audio & {
   id: number;
@@ -70,6 +71,7 @@ const AudioElement = ({
   cdnUrl,
 }: AudioElementProps) => {
   const { data: session } = authClient.useSession();
+  const baseLink = typeof window !== "undefined" ? window.location.origin : "";
 
   const audioUrl = `${cdnUrl}/${soundId}.mp3`;
   const [ShowCustomizeDialog, setShowCustomizeDialog] = useState(false);
@@ -91,13 +93,22 @@ const AudioElement = ({
       alert("You need to be logged in to like an audio.");
       return;
     }
-    console.log(`Audio with ID ${soundId} liked!`);
+    toast.success("Event has been created");
     fetch(`/api/sounds/likeAudio`, {
       method: "POST",
       body: JSON.stringify({ soundId: soundId, userId: session?.user.id }),
     });
     setIsLiked(!isLiked);
   };
+
+  const handleShare = async (title: string, link: string) => {
+    await navigator.share({
+      title: title,
+      text: "Check out this sound 🔊",
+      url: link,
+    });
+  };
+
   return (
     <div
       className="flex items-center justify-between py-2 px-6 rounded-3xl
@@ -152,9 +163,9 @@ const AudioElement = ({
                       viewBox="0 0 24 24"
                       fill="red"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="lucide lucide-heart-icon lucide-heart"
                     >
                       <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
@@ -168,7 +179,11 @@ const AudioElement = ({
                   </>
                 )}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setShowShareDialog(true)}>
+              <DropdownMenuItem
+                onSelect={() =>
+                  handleShare(title, `${baseLink}/sounds/${soundId}`)
+                }
+              >
                 <Share2 />
                 Share
               </DropdownMenuItem>
@@ -228,17 +243,6 @@ const AudioElement = ({
               </DialogClose>
               <Button type="submit">Send Invite</Button>
             </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        {/* Share Dialog */}
-        <Dialog open={ShowShareDialog} onOpenChange={setShowShareDialog}>
-          <DialogContent className="sm:max-w-106.25">
-            <DialogHeader>
-              <DialogTitle>Share this audio</DialogTitle>
-              <DialogDescription>
-                Share this audio with your friends and colleagues!
-              </DialogDescription>
-            </DialogHeader>
           </DialogContent>
         </Dialog>
         {/* Report Dialog */}

@@ -9,9 +9,11 @@ export const publicRoutes = [
   "/start",
   "/plugins",
   "/editor",
+  "/legals/terms-of-service",
+  "/legals/privacy-policy",
+  "/legals/dmca-copyright",
   "/not_authorized",
   "/api/sounds",
-  "/api/sounds/push",
 ];
 
 /**

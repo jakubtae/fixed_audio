@@ -6,10 +6,11 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     const limit = Number(searchParams.get("limit") ?? 12);
-    const page = Number(searchParams.get("page") ?? 0); // page-based pagination
+    const page = Number(searchParams.get("page") ?? 0);
 
     // Filters
     const type = searchParams.get("type"); // category filter
+    const search = searchParams.get("search"); // 🔍 title search
 
     // Sorting
     const sortKey =
@@ -23,7 +24,17 @@ export async function GET(req: Request) {
 
     // Build query
     const query: any = {};
-    if (type) query.category = type;
+
+    if (type) {
+      query.category = type;
+    }
+
+    if (search) {
+      query.title = {
+        $regex: search,
+        $options: "i", // case-insensitive
+      };
+    }
 
     // Fetch data
     const sounds = await soundsCollection
@@ -49,7 +60,7 @@ export async function GET(req: Request) {
         updatedAt: sound.updatedAt,
       })),
       hasMore,
-      page: page + 1, // next page number
+      page: page + 1,
     });
   } catch (error) {
     console.error("Error fetching sounds:", error);

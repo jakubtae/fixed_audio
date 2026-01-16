@@ -16,6 +16,7 @@ import {
 import { Button } from "../ui/button";
 import {
   Angry,
+  DownloadIcon,
   ExternalLink,
   Heart,
   MoreVerticalIcon,
@@ -114,18 +115,20 @@ const AudioElement = ({
           <AnimatedAudioPlayer src={audioUrl} />
         </div>
         <div className="flex flex-col">
-          <h3 className="text font-semibold capitalize">{title}</h3>
+          <h3 className="text font-semibold capitalize max-w-54 text-xs sm:text-base">
+            {title}
+          </h3>
           <span className="text-xs font-semibold text-[#9F9F9F]">Autor</span>
         </div>
       </div>
       <div className="flex-center gap-2">
-        <Badge className="py-1 px-4 text-xs bg-[#444444] text-white rounded-full">
-          {" "}
+        <Badge className="py-1 px-4 text-[8px] min-[500px]:text-xs  bg-[#444444] text-white rounded-full">
           {type}
         </Badge>
+
         <Button
           variant="secondary"
-          className="bg-[#EBF4DD] focus:bg-amber-50"
+          className="bg-[#EBF4DD] focus:bg-amber-50 hidden lg:block"
           asChild
         >
           <a href={audioUrl} download target="_blank" rel="noopener noreferrer">
@@ -184,6 +187,17 @@ const AudioElement = ({
               <DropdownMenuItem onSelect={() => setShowCustomizeDialog(true)}>
                 <Paintbrush />
                 Customize Button
+              </DropdownMenuItem>{" "}
+              <DropdownMenuItem className="lg:hidden" asChild>
+                <a
+                  href={audioUrl}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <DownloadIcon />
+                  Download
+                </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

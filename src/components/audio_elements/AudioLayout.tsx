@@ -7,14 +7,12 @@ import { Sound } from "@/lib/schemas/sound.types";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 
-// Derive categories directly from the Sound type
+// Categories derived from Sound type
 const CATEGORY_OPTIONS: Sound["category"][] = [
   "Anime & Manga",
   "Games",
@@ -35,24 +33,37 @@ const CATEGORY_OPTIONS: Sound["category"][] = [
 
 export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
   const [sounds, setSounds] = useState<Sound[]>([]);
-  const [page, setPage] = useState(0); // page-based pagination
+  const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // Filter + sort state
+  // Filters / sorting
   const [selectedType, setSelectedType] = useState<Sound["category"] | "">("");
   const [sortKey, setSortKey] = useState<"views" | "likes" | "createdAt">(
     "views"
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
+  // Search
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const sentinelRef = useRef<HTMLDivElement>(null);
   const fetchingRef = useRef(false);
 
-  // Fetch sounds from API
+  // Debounce search input
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [search]);
+
+  // Fetch sounds
   const fetchSounds = useCallback(
-    async (pageNumber: number = 0, reset = false) => {
+    async (pageNumber = 0, reset = false) => {
       if (fetchingRef.current) return;
 
       fetchingRef.current = true;
@@ -63,6 +74,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
         params.append("limit", "12");
         params.append("page", pageNumber.toString());
         if (selectedType) params.append("type", selectedType);
+        if (debouncedSearch) params.append("search", debouncedSearch);
         params.append("sortKey", sortKey);
         params.append("sortOrder", sortOrder);
 
@@ -74,15 +86,15 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
         setSounds((prev) => (reset ? data.items : [...prev, ...data.items]));
         setPage(data.page);
         setHasMore(data.hasMore);
-      } catch (error) {
-        console.error("Error fetching sounds:", error);
+      } catch (err) {
+        console.error("Error fetching sounds:", err);
       } finally {
-        setLoading(false);
         fetchingRef.current = false;
+        setLoading(false);
         setIsInitialLoad(false);
       }
     },
-    [selectedType, sortKey, sortOrder]
+    [selectedType, sortKey, sortOrder, debouncedSearch]
   );
 
   // Initial fetch
@@ -90,33 +102,32 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
     fetchSounds(0, true);
   }, [fetchSounds]);
 
-  // Refetch on filter/sort change
+  // Refetch on filter / sort / search change
   useEffect(() => {
     setSounds([]);
     setPage(0);
     setHasMore(true);
     fetchSounds(0, true);
-  }, [selectedType, sortKey, sortOrder, fetchSounds]);
+  }, [selectedType, sortKey, sortOrder, debouncedSearch, fetchSounds]);
 
   // Infinite scroll
   useEffect(() => {
     if (!hasMore || loading) return;
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
+      ([entry]) => {
         if (entry.isIntersecting && !fetchingRef.current) {
           fetchSounds(page);
         }
       },
-      { root: null, rootMargin: "100px", threshold: 0.1 }
+      { rootMargin: "100px", threshold: 0.1 }
     );
 
-    const currentSentinel = sentinelRef.current;
-    if (currentSentinel) observer.observe(currentSentinel);
+    const el = sentinelRef.current;
+    if (el) observer.observe(el);
 
     return () => {
-      if (currentSentinel) observer.unobserve(currentSentinel);
+      if (el) observer.unobserve(el);
     };
   }, [hasMore, loading, page, fetchSounds]);
 
@@ -125,10 +136,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
       <div className="w-full max-w-6xl flex-center flex-col gap-6">
         <div className="flex flex-col gap-2 w-full md:w-2/3">
           {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="h-20 bg-gray-200 animate-pulse rounded"
-            ></div>
+            <div key={i} className="h-20 bg-gray-200 animate-pulse rounded" />
           ))}
         </div>
       </div>
@@ -137,13 +145,19 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
 
   return (
     <div className="w-full max-w-6xl flex-center flex-col gap-6">
-      {/* Filter & Sort Controls */}
+      {/* Controls */}
       <div className="flex flex-wrap gap-4 w-full md:w-2/3 mb-4">
+        <input
+          type="text"
+          placeholder="Search by title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full md:flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+        />
+
         <Select
-          onValueChange={(value) =>
-            setSelectedType(value as Sound["category"] | "")
-          }
           value={selectedType}
+          onValueChange={(v) => setSelectedType(v as Sound["category"] | "")}
         >
           <SelectTrigger>
             <SelectValue placeholder="Filter" />
@@ -156,13 +170,14 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
             ))}
           </SelectContent>
         </Select>
+
         <Select
+          value={`${sortKey}-${sortOrder}`}
           onValueChange={(value) => {
             const [key, order] = value.split("-");
-            setSortKey(key as "views" | "likes" | "createdAt");
-            setSortOrder(order as "asc" | "desc");
+            setSortKey(key as typeof sortKey);
+            setSortOrder(order as typeof sortOrder);
           }}
-          value={`${sortKey}-${sortOrder}`}
         >
           <SelectTrigger>
             <SelectValue placeholder="Sort" />
@@ -176,43 +191,32 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
         </Select>
       </div>
 
-      {/* Audio Elements */}
-      <div className="flex flex-col gap-2 w-full md:w-2/3">
+      {/* Sounds */}
+      <div className="flex flex-col gap-2 w-full lg:w-2/3">
         {sounds.map((audio, i) => (
           <AudioElement
             key={audio._id}
-            title={audio.title}
-            soundId={audio.soundId}
-            type={audio.category}
             id={i + 1}
+            title={audio.title}
+            type={audio.category}
+            soundId={audio.soundId}
             cdnUrl={cdnUrl}
           />
         ))}
 
-        {/* Sentinel for infinite scroll */}
         {hasMore && (
-          <div
-            ref={sentinelRef}
-            className="h-10 flex items-center justify-center"
-          >
+          <div ref={sentinelRef} className="h-10 flex-center">
             {loading && (
-              <div className="text-gray-500 text-sm">
+              <span className="text-gray-500 text-sm">
                 Loading more sounds...
-              </div>
+              </span>
             )}
           </div>
         )}
       </div>
 
-      {/* Bottom loading / end message */}
-      {loading && !isInitialLoad && (
-        <div className="text-gray-500 text-sm py-4">Loading more sounds...</div>
-      )}
-
       {!hasMore && sounds.length > 0 && (
-        <p className="text-gray-500 text-sm py-4">
-          You've reached the end! No more sounds to load.
-        </p>
+        <p className="text-gray-500 text-sm py-4">You've reached the end.</p>
       )}
     </div>
   );

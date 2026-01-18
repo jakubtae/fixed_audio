@@ -19,7 +19,7 @@ const montserrat = Montserrat({
   subsets: ["latin"],
 });
 export const metadata: Metadata = {
-  title: "Audio App",
+  title: "NBS",
   description: "Viral audio in your hand",
 };
 
@@ -30,6 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="favicon.ico" sizes="any" />
+      </head>
       <body
         className={`${montserrat.variable} antialiased flex flex-col min-h-screen pb-2 text-[#EBF4DD] bg-[#202020]`}
       >

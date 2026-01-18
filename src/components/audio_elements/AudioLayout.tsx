@@ -41,7 +41,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
   // Filters / sorting
   const [selectedType, setSelectedType] = useState<Sound["category"] | "">("");
   const [sortKey, setSortKey] = useState<"views" | "likes" | "createdAt">(
-    "views"
+    "views",
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
@@ -94,7 +94,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
         setIsInitialLoad(false);
       }
     },
-    [selectedType, sortKey, sortOrder, debouncedSearch]
+    [selectedType, sortKey, sortOrder, debouncedSearch],
   );
 
   // Initial fetch
@@ -120,7 +120,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
           fetchSounds(page);
         }
       },
-      { rootMargin: "100px", threshold: 0.1 }
+      { rootMargin: "100px", threshold: 0.1 },
     );
 
     const el = sentinelRef.current;
@@ -149,11 +149,10 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
       <div className="flex flex-wrap gap-4 w-full md:w-2/3 mb-4">
         <input
           type="text"
-          placeholder="Search by title..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full md:flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-        />
+        ></input>
 
         <Select
           value={selectedType}

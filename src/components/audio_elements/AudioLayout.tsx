@@ -144,21 +144,21 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
   }
 
   return (
-    <div className="w-full max-w-6xl flex-center flex-col gap-6">
+    <div className="w-full max-w-7xl flex-center flex-col gap-6">
       {/* Controls */}
-      <div className="flex flex-wrap gap-4 w-full md:w-2/3 mb-4">
+      <div className="flex flex-wrap gap-4 w-full md:w-5/6 mb-4">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full md:flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="w-full md:flex-1 rounded-md border-2 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
         ></input>
 
         <Select
           value={selectedType}
           onValueChange={(v) => setSelectedType(v as Sound["category"] | "")}
         >
-          <SelectTrigger>
+          <SelectTrigger className="border-2">
             <SelectValue placeholder="Filter" />
           </SelectTrigger>
           <SelectContent>
@@ -178,7 +178,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
             setSortOrder(order as typeof sortOrder);
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger className="border-2">
             <SelectValue placeholder="Sort" />
           </SelectTrigger>
           <SelectContent>
@@ -191,7 +191,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
       </div>
 
       {/* Sounds */}
-      <div className="flex flex-col gap-2 w-full lg:w-2/3">
+      <div className="flex flex-col gap-2 w-full lg:w-5/6">
         {sounds.map((audio, i) => (
           <AudioElement
             key={audio._id}

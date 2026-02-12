@@ -16,6 +16,7 @@ import {
 import { Button } from "../ui/button";
 import {
   Angry,
+  Download,
   DownloadIcon,
   ExternalLink,
   Heart,
@@ -67,7 +68,7 @@ const AudioElement = ({
   const [ShowShareDialog, setShowShareDialog] = useState(false);
   const [ShowReportDialog, setShowReportDialog] = useState(false);
   const [isLiked, setIsLiked] = useState(
-    session?.user?.liked?.includes(soundId) || false
+    session?.user?.liked?.includes(soundId) || false,
   );
 
   if (!type) {
@@ -118,7 +119,7 @@ const AudioElement = ({
           <h3 className="text font-semibold capitalize max-w-54 text-xs sm:text-base">
             {title}
           </h3>
-          <span className="text-xs font-semibold text-[#9F9F9F]">Autor</span>
+          {/* <span className="text-xs font-semibold text-[#9F9F9F]">Autor</span> */}
         </div>
       </div>
       <div className="flex-center gap-2">
@@ -133,7 +134,7 @@ const AudioElement = ({
         >
           <a href={audioUrl} download target="_blank" rel="noopener noreferrer">
             {" "}
-            Download
+            <Download strokeWidth={3} />
           </a>
         </Button>
         <DropdownMenu modal={false}>

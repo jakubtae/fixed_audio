@@ -5,9 +5,9 @@ export default function Home() {
   return (
     <div className="font-montserrat flex flex-col items-center flex-1 p-2 pt-8 gap-8 lg:gap-6 sm:p-10 w-full">
       <h1 className="text-4xl lg:text-8xl font-bold  text-center uppercase">
-        Browse viral audio
+        Main Page
       </h1>
-      <AudioLayout cdnUrl={CDNurl} />
+      {/* <AudioLayout cdnUrl={CDNurl} /> */}
     </div>
   );
 }

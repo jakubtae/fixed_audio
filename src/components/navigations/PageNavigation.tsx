@@ -1,3 +1,4 @@
+// components/navigations/PageNavigation.tsx
 "use client";
 
 import Link from "next/link";
@@ -5,85 +6,109 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { authClient } from "@/auth-client";
 import Image from "next/image";
-import { Home, LogIn, Menu, SearchIcon, Settings } from "lucide-react";
+import { Home, LogIn, Menu, SearchIcon, Settings, X } from "lucide-react";
 
-export const Navigation = () => {
+interface NavigationProps {
+  onClose?: () => void;
+  isMobile?: boolean;
+}
+
+export const Navigation = ({ onClose, isMobile = false }: NavigationProps) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const { data: session } = authClient.useSession();
 
-  useEffect(() => {
-    const checkScreen = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth < 768) {
-        setCollapsed(true);
-      } else {
-        setCollapsed(false);
-      }
-    };
+  // Handle link click - close mobile nav
+  const handleLinkClick = () => {
+    if (isMobile && onClose) {
+      onClose();
+    }
+  };
 
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
-
-    return () => window.removeEventListener("resize", checkScreen);
-  }, []);
+  // For desktop, we still want the collapse functionality
+  // For mobile, we want a fixed width (not collapsed)
+  const navWidth = isMobile ? "w-64" : collapsed ? "w-16" : "w-64";
 
   return (
     <aside
       className={`
-        h-screen bg-[#121212] text-[#EBF4DD]
+        h-full bg-[#121212] text-[#EBF4DD]
         flex flex-col
         transition-all duration-300
-        ${collapsed ? "px-1" : "w-64"}
+        ${navWidth}
+        ${isMobile ? "shadow-2xl" : ""}
       `}
     >
       {/* Top Section */}
       <div
         className={`flex items-center justify-between border-b border-neutral-800 ${
-          collapsed ? "flex-col p-0 py-2" : "flex-row p-4"
+          collapsed && !isMobile ? "flex-col py-2" : "p-4"
         }`}
       >
-        <Link href="/" className="flex items-center gap-2">
+        <Link
+          href="/"
+          className="flex items-center gap-2"
+          onClick={handleLinkClick}
+        >
           <Image
             src="/nbs.png"
             alt="Logo"
-            width={collapsed ? 50 : 90}
-            height={collapsed ? 50 : 50}
+            width={collapsed && !isMobile ? 40 : 90}
+            height={collapsed && !isMobile ? 40 : 50}
+            className="transition-all"
           />
         </Link>
 
-        {/* Collapse Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          <Menu size={20} />
-        </Button>
+        {/* Close button for mobile, collapse for desktop */}
+        {isMobile ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className={collapsed && !isMobile ? "mt-2" : ""}
+          >
+            <X size={20} />
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            <Menu size={20} />
+          </Button>
+        )}
       </div>
 
       {/* Navigation Links */}
       <div className="flex flex-col gap-2 p-3 flex-1">
-        <NavItem href="/" icon={<Home />} label="Home" collapsed={collapsed} />
+        <NavItem
+          href="/"
+          icon={<Home />}
+          label="Home"
+          collapsed={collapsed && !isMobile}
+          onClick={handleLinkClick}
+        />
 
         <NavItem
           href="/search"
           icon={<SearchIcon />}
           label="Search"
-          collapsed={collapsed}
+          collapsed={collapsed && !isMobile}
+          onClick={handleLinkClick}
         />
 
         <NavItem
           href="/profile"
           icon={session?.user ? <Settings /> : <LogIn />}
           label={session?.user ? "Settings" : "Log in"}
-          collapsed={collapsed}
+          collapsed={collapsed && !isMobile}
+          onClick={handleLinkClick}
         />
       </div>
 
-      {/* Bottom Section */}
+      {/* Bottom Section - only show on desktop when not collapsed */}
       <div className="p-3 border-t border-neutral-800">
-        {!collapsed && (
+        {!collapsed && !isMobile && (
           <p className="text-xs text-neutral-500">Viral audio in your hand</p>
         )}
       </div>
@@ -96,11 +121,13 @@ const NavItem = ({
   icon,
   label,
   collapsed,
+  onClick,
 }: {
   href: string;
   icon: React.ReactNode;
   label: string;
   collapsed: boolean;
+  onClick?: () => void;
 }) => {
   return (
     <Button
@@ -109,6 +136,7 @@ const NavItem = ({
         collapsed ? "justify-center px-2" : "justify-start"
       }`}
       asChild
+      onClick={onClick}
     >
       <Link
         href={href}

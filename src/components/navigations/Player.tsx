@@ -110,7 +110,7 @@ export const Player = () => {
   };
   if (!currentTrack) {
     return (
-      <div className="fixed bottom-0 left-0 w-full h-24 bg-[#181818] border-t border-neutral-800 flex items-center justify-center px-6 z-50 hidden">
+      <div className="hidden">
         <audio ref={audioRef} />
       </div>
     );

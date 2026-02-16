@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { authClient } from "@/auth-client";
 import Image from "next/image";
-import { Menu } from "lucide-react";
+import { Home, LogIn, Menu, SearchIcon, Settings } from "lucide-react";
 
 export const Navigation = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -34,16 +34,23 @@ export const Navigation = () => {
         h-screen bg-[#121212] text-[#EBF4DD]
         flex flex-col
         transition-all duration-300
-        ${collapsed ? "w-20" : "w-64"}
+        ${collapsed ? "px-1" : "w-64"}
       `}
     >
       {/* Top Section */}
-      <div className="flex items-center justify-between p-4 border-b border-neutral-800">
-        {!collapsed && (
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/nbs.png" alt="Logo" width={90} height={50} />
-          </Link>
-        )}
+      <div
+        className={`flex items-center justify-between border-b border-neutral-800 ${
+          collapsed ? "flex-col p-0 py-2" : "flex-row p-4"
+        }`}
+      >
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/nbs.png"
+            alt="Logo"
+            width={collapsed ? 50 : 90}
+            height={collapsed ? 50 : 50}
+          />
+        </Link>
 
         {/* Collapse Button */}
         <Button
@@ -57,13 +64,21 @@ export const Navigation = () => {
 
       {/* Navigation Links */}
       <div className="flex flex-col gap-2 p-3 flex-1">
-        <NavItem href="/search" collapsed={collapsed}>
-          Search
-        </NavItem>
+        <NavItem href="/" icon={<Home />} label="Home" collapsed={collapsed} />
 
-        <NavItem href="/profile" collapsed={collapsed}>
-          {session?.user ? "Profile" : "Log In"}
-        </NavItem>
+        <NavItem
+          href="/search"
+          icon={<SearchIcon />}
+          label="Search"
+          collapsed={collapsed}
+        />
+
+        <NavItem
+          href="/profile"
+          icon={session?.user ? <Settings /> : <LogIn />}
+          label={session?.user ? "Settings" : "Log in"}
+          collapsed={collapsed}
+        />
       </div>
 
       {/* Bottom Section */}
@@ -78,27 +93,29 @@ export const Navigation = () => {
 
 const NavItem = ({
   href,
-  children,
+  icon,
+  label,
   collapsed,
 }: {
   href: string;
-  children: React.ReactNode;
+  icon: React.ReactNode;
+  label: string;
   collapsed: boolean;
 }) => {
   return (
     <Button
       variant="ghost"
-      className={`justify-start w-full ${
-        collapsed ? "px-2 justify-center" : ""
+      className={`w-full ${
+        collapsed ? "justify-center px-2" : "justify-start"
       }`}
       asChild
     >
-      <Link href={href}>
-        {collapsed ? (
-          <span className="text-lg">•</span>
-        ) : (
-          <span>{children}</span>
-        )}
+      <Link
+        href={href}
+        className={`flex items-center ${collapsed ? "justify-center" : "gap-2"}`}
+      >
+        {icon}
+        {!collapsed && <span>{label}</span>}
       </Link>
     </Button>
   );

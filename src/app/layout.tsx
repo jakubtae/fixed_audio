@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/navigations/PageNavigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Player } from "@/components/navigations/Player";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,33 +56,7 @@ export default function RootLayout({
           </div>
 
           {/* Fixed Bottom Player */}
-          <div className="fixed bottom-0 left-0 w-full h-20 bg-[#181818] border-t border-neutral-800 flex items-center px-6 z-50">
-            <div className="flex w-full items-center justify-between">
-              {/* Left */}
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-neutral-700 rounded-md" />
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold">
-                    Currently Playing
-                  </span>
-                  <span className="text-xs text-neutral-400">Artist Name</span>
-                </div>
-              </div>
-
-              {/* Center */}
-              <div className="flex items-center gap-6">
-                <button className="text-xl">⏮</button>
-                <button className="text-2xl">▶</button>
-                <button className="text-xl">⏭</button>
-              </div>
-
-              {/* Right */}
-              <div className="flex items-center gap-3 w-40">
-                <span>🔊</span>
-                <input type="range" className="w-full" />
-              </div>
-            </div>
-          </div>
+          <Player />
         </div>
       </body>
     </html>

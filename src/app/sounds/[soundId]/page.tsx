@@ -37,7 +37,6 @@ export default async function Page({
           <AnimatedAudioPlayer
             src={CDNurl + "/" + sound.soundId + ".mp3"}
             title={sound.title}
-            autoPlay
           />
         </div>
         <h1 className="text-3xl md:text-6xl font-bold">{sound.title}</h1>

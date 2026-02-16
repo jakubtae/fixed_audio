@@ -113,7 +113,7 @@ const AudioElement = ({
              shadow-[0_0px_4px_rgba(255,255,255,0.2)] flex-center"
           style={{ background: gradientMap[type] }}
         >
-          <AnimatedAudioPlayer src={audioUrl} />
+          <AnimatedAudioPlayer src={audioUrl} title={title} artist={type} />
         </div>
         <div className="flex flex-col">
           <h3 className="text font-semibold capitalize max-w-54 text-xs sm:text-base">

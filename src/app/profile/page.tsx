@@ -10,22 +10,17 @@ export default function Profile() {
     <div>
       {session?.user && (
         <div className="flex w-full flex-col gap-2 items-center justify-center py-10">
-          <p className="font-semibold">Signed in as {session.user.email}</p>{" "}
-          {session.user.role && session.user.role === "ADMIN" && (
+          <p className="text-4xl lg:text-8xl font-bold  text-center uppercase">
+            Hello, {session.user.name}
+          </p>{" "}
+          {session?.user && session.user.role === "ADMIN" && (
             <>
-              <p className="font-semibold">You are an Admin</p>
+              <br />
               <Link href="/profile/admin">
                 <Button variant="destructive">Admin Dashboard</Button>
               </Link>
             </>
           )}
-          <Button
-            type="submit"
-            variant="destructive"
-            onClick={() => authClient.signOut()}
-          >
-            Sign out
-          </Button>
         </div>
       )}
       {!session?.user && (

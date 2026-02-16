@@ -7,11 +7,13 @@ type AnimatedAudioPlayerProps = {
   src: string;
   title: string;
   artist?: string;
+  soundId: string;
 };
 
 export default function AnimatedAudioPlayer({
   src,
   title,
+  soundId,
   artist = "Unknown Artist",
 }: AnimatedAudioPlayerProps) {
   const { currentTrack, isPlaying, setTrack, togglePlay } = usePlayerStore();
@@ -30,6 +32,7 @@ export default function AnimatedAudioPlayer({
       title,
       artist,
       audioUrl: src,
+      soundId,
     });
   };
 

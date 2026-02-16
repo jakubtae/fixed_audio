@@ -90,7 +90,7 @@ export default function ReportDialog({
 
   return (
     <Dialog open={ShowReportDialog} onOpenChange={setShowReportDialog}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle className="text-red-600">Report this audio</DialogTitle>
           <DialogDescription>

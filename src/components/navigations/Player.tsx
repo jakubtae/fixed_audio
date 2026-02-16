@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import { PauseIcon, PlayIcon } from "lucide-react";
+import AudioMenu from "../audio_elements/AudioMenu";
 
 export const Player = () => {
   const { currentTrack, isPlaying, togglePlay } = usePlayerStore();
@@ -148,7 +149,6 @@ export const Player = () => {
         <span className="text-xs w-10 text-right">
           {formatTime(currentTime)}
         </span>
-
         <input
           type="range"
           min={0}
@@ -157,8 +157,13 @@ export const Player = () => {
           onChange={handleSeek}
           className="w-full"
         />
-
         <span className="text-xs w-10">{formatTime(duration)}</span>
+        <AudioMenu
+          title={currentTrack.title}
+          soundId={currentTrack.soundId}
+          cdnUrl={currentTrack.audioUrl}
+          type="other"
+        />
       </div>
     </div>
   );

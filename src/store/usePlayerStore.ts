@@ -5,6 +5,7 @@ type Track = {
   artist: string;
   image?: string;
   audioUrl: string;
+  soundId: string;
 };
 
 type PlayerStore = {

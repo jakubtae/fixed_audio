@@ -6,7 +6,17 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { authClient } from "@/auth-client";
 import Image from "next/image";
-import { Home, LogIn, Menu, SearchIcon, Settings, X } from "lucide-react";
+import {
+  Heart,
+  Home,
+  Info,
+  LogIn,
+  LogOut,
+  Menu,
+  SearchIcon,
+  Settings,
+  X,
+} from "lucide-react";
 
 interface NavigationProps {
   onClose?: () => void;
@@ -21,6 +31,14 @@ export const Navigation = ({ onClose, isMobile = false }: NavigationProps) => {
   const handleLinkClick = () => {
     if (isMobile && onClose) {
       onClose();
+    }
+  };
+
+  const logOut = async () => {
+    try {
+      await authClient.signOut();
+    } catch (error: any) {
+      alert("Error logging out: " + error.message);
     }
   };
 
@@ -98,12 +116,49 @@ export const Navigation = ({ onClose, isMobile = false }: NavigationProps) => {
         />
 
         <NavItem
-          href="/profile"
-          icon={session?.user ? <Settings /> : <LogIn />}
-          label={session?.user ? "Settings" : "Log in"}
+          href="/liked"
+          icon={<Heart />}
+          label="Liked"
           collapsed={collapsed && !isMobile}
           onClick={handleLinkClick}
         />
+      </div>
+      <div className="flex-col gap-2 p-3 pb-24">
+        {session?.user && (
+          <NavItem
+            href="/profile"
+            icon={<Settings />}
+            label={"Settings"}
+            collapsed={collapsed && !isMobile}
+            onClick={handleLinkClick}
+          />
+        )}
+        <NavItem
+          href="/legals"
+          icon={<Info />}
+          label="Help & Support"
+          collapsed={collapsed && !isMobile}
+          onClick={handleLinkClick}
+        />
+        {!session?.user ? (
+          <NavItem
+            href="/profile"
+            icon={<LogOut className="text-blue-500" />}
+            label="Log In"
+            style={{ color: "Blue" }}
+            collapsed={collapsed && !isMobile}
+            onClick={handleLinkClick}
+          />
+        ) : (
+          <NavItem
+            href="/"
+            icon={<LogOut className="text-red-500" />}
+            label="Log Out"
+            style={{ color: "red" }}
+            collapsed={collapsed && !isMobile}
+            onClick={logOut}
+          />
+        )}
       </div>
 
       {/* Bottom Section - only show on desktop when not collapsed */}
@@ -121,12 +176,14 @@ const NavItem = ({
   icon,
   label,
   collapsed,
+  style,
   onClick,
 }: {
   href: string;
   icon: React.ReactNode;
   label: string;
   collapsed: boolean;
+  style?: React.CSSProperties;
   onClick?: () => void;
 }) => {
   return (
@@ -135,6 +192,7 @@ const NavItem = ({
       className={`w-full ${
         collapsed ? "justify-center px-2" : "justify-start"
       }`}
+      style={style}
       asChild
       onClick={onClick}
     >

@@ -34,7 +34,18 @@ const CATEGORY_OPTIONS: Sound["category"][] = [
   "Whatsapp Audios",
 ];
 
-export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
+export type OptimisticAction =
+  | { type: "remove"; sound: Sound }
+  | { type: "restore"; sound: Sound };
+
+export default function AudioLikedLayout({
+  cdnUrl,
+  liked = false,
+}: {
+  cdnUrl: string;
+  liked?: boolean;
+}) {
+  const { data: session } = authClient.useSession();
   const [sounds, setSounds] = useState<Sound[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -55,6 +66,20 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const fetchingRef = useRef(false);
 
+  const handleOptimisticUpdate = useCallback((action: OptimisticAction) => {
+    setSounds((prev) => {
+      if (action.type === "remove") {
+        return prev.filter((s) => s.soundId !== action.sound.soundId);
+      }
+
+      if (action.type === "restore") {
+        return [action.sound, ...prev];
+      }
+
+      return prev;
+    });
+  }, []);
+
   // Debounce search input
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -64,10 +89,21 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
     return () => clearTimeout(timeout);
   }, [search]);
 
-  // Fetch sounds
-  const fetchSounds = useCallback(
+  const fetchLikedSounds = useCallback(
     async (pageNumber = 0, reset = false) => {
       if (fetchingRef.current) return;
+
+      const session = await authClient.getSession();
+      const likedSongs = session.data?.user?.liked || [];
+
+      // 🚨 If no liked songs → immediately return
+      if (likedSongs.length === 0) {
+        setSounds([]);
+        setHasMore(false);
+        setLoading(false);
+        setIsInitialLoad(false);
+        return;
+      }
 
       fetchingRef.current = true;
       setLoading(true);
@@ -76,12 +112,19 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
         const params = new URLSearchParams();
         params.append("limit", "12");
         params.append("page", pageNumber.toString());
+
         if (selectedType) params.append("type", selectedType);
         if (debouncedSearch) params.append("search", debouncedSearch);
+
         params.append("sortKey", sortKey);
         params.append("sortOrder", sortOrder);
 
-        const res = await fetch(`/api/sounds?${params.toString()}`);
+        // 🔥 Send liked IDs
+        params.append("liked", likedSongs.join(","));
+
+        const res = await fetch(`/api/sounds/liked?${params.toString()}`, {
+          cache: "no-store",
+        });
         if (!res.ok) throw new Error("Failed to fetch sounds");
 
         const data = await res.json();
@@ -97,21 +140,21 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
         setIsInitialLoad(false);
       }
     },
-    [selectedType, sortKey, sortOrder, debouncedSearch],
+    [selectedType, sortKey, sortOrder, debouncedSearch, session],
   );
 
   // Initial fetch
   useEffect(() => {
-    fetchSounds(0, true);
-  }, [fetchSounds]);
+    fetchLikedSounds(0, true);
+  }, [liked, fetchLikedSounds]);
 
   // Refetch on filter / sort / search change
   useEffect(() => {
     setSounds([]);
     setPage(0);
     setHasMore(true);
-    fetchSounds(0, true);
-  }, [selectedType, sortKey, sortOrder, debouncedSearch, fetchSounds]);
+    fetchLikedSounds(0, true);
+  }, [selectedType, sortKey, sortOrder, debouncedSearch, fetchLikedSounds]);
 
   // Infinite scroll
   useEffect(() => {
@@ -120,7 +163,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !fetchingRef.current) {
-          fetchSounds(page);
+          fetchLikedSounds(page);
         }
       },
       { rootMargin: "100px", threshold: 0.1 },
@@ -132,7 +175,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
     return () => {
       if (el) observer.unobserve(el);
     };
-  }, [hasMore, loading, page, fetchSounds]);
+  }, [hasMore, loading, page, fetchLikedSounds]);
 
   if (isInitialLoad) {
     return (
@@ -145,7 +188,20 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
       </div>
     );
   }
-
+  console.log("Liked:", liked, "Session:", session);
+  if (liked && !session) {
+    return (
+      <div className="w-full flex flex-col items-center">
+        <Button variant="link_inherit" asChild>
+          <Link href="/profile">
+            <p className="text-gray-500 text-sm">
+              Please log in to view your liked songs.
+            </p>
+          </Link>
+        </Button>
+      </div>
+    );
+  }
   return (
     <div className="w-full max-w-7xl flex-center flex-col gap-6">
       {/* Controls */}
@@ -197,12 +253,14 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
       <div className="flex flex-col gap-2 w-full lg:w-5/6">
         {sounds.map((audio, i) => (
           <AudioElement
-            key={audio._id}
+            key={i}
             id={i + 1}
             title={audio.title}
             type={audio.category}
             soundId={audio.soundId}
             cdnUrl={cdnUrl}
+            fullSound={audio} // 👈 pass full object
+            onUnlike={handleOptimisticUpdate}
           />
         ))}
 

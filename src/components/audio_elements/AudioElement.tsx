@@ -3,6 +3,8 @@ import { Audio } from "@/lib/list";
 type AudioElementProps = Audio & {
   id: number;
   cdnUrl: string;
+  fullSound?: Sound; // 👈 add
+  onUnlike?: (action: OptimisticAction) => void;
 };
 
 import { Button } from "../ui/button";
@@ -15,6 +17,8 @@ import AnimatedAudioPlayer from "./AudioPlayer";
 import { gradientMap } from "@/lib/typeColors";
 
 import AudioMenu from "./AudioMenu";
+import { Sound } from "@/lib/schemas/sound.types";
+import { OptimisticAction } from "./AudioLikedLayout";
 
 // const gradientMap: Record<Audio["type"], string> = {
 //   game: "linear-gradient(to bottom, #b91c1c, #000000)", // red → black
@@ -30,6 +34,8 @@ const AudioElement = ({
   type,
   id,
   cdnUrl,
+  onUnlike,
+  fullSound,
 }: AudioElementProps) => {
   const audioUrl = `${cdnUrl}/${soundId}.mp3`;
 
@@ -88,6 +94,8 @@ const AudioElement = ({
           soundId={soundId}
           type={type}
           cdnUrl={cdnUrl}
+          fullSound={fullSound}
+          onUnlike={onUnlike}
         />
       </div>
     </div>

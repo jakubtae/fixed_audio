@@ -22,9 +22,13 @@ import {
 import { toast } from "sonner";
 import { authClient } from "@/auth-client";
 import { Audio } from "@/lib/list";
+
 type AudioElementProps = Audio & {
   cdnUrl: string;
+  onUnlike?: (action: OptimisticAction) => void;
+  fullSound?: Sound;
 };
+
 import { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import {
@@ -36,8 +40,17 @@ import {
   Paintbrush,
   Share2,
 } from "lucide-react";
+import { Sound } from "@/lib/schemas/sound.types";
+import { OptimisticAction } from "./AudioLikedLayout";
 
-const AudioMenu = ({ title, soundId, cdnUrl, type }: AudioElementProps) => {
+const AudioMenu = ({
+  title,
+  soundId,
+  cdnUrl,
+  type,
+  onUnlike,
+  fullSound,
+}: AudioElementProps) => {
   const { data: session } = authClient.useSession();
   const baseLink = typeof window !== "undefined" ? window.location.origin : "";
   const [ShowCustomizeDialog, setShowCustomizeDialog] = useState(false);
@@ -48,18 +61,41 @@ const AudioMenu = ({ title, soundId, cdnUrl, type }: AudioElementProps) => {
   );
   const audioUrl = `${cdnUrl}/${soundId}.mp3`;
 
-  const handleLiked = () => {
-    // Implement your logic to handle the "like" action here
+  const handleLiked = async () => {
     if (!session?.user) {
       alert("You need to be logged in to like an audio.");
       return;
     }
-    toast.success("Event has been created");
-    fetch(`/api/sounds/likeAudio`, {
-      method: "POST",
-      body: JSON.stringify({ soundId: soundId, userId: session?.user.id }),
-    });
+
+    const wasLiked = isLiked;
+
+    // 🔥 Optimistic UI
     setIsLiked(!isLiked);
+
+    if (wasLiked && onUnlike && fullSound) {
+      onUnlike({ type: "remove", sound: fullSound });
+    }
+
+    try {
+      const res = await fetch(`/api/sounds/likeAudio`, {
+        method: "POST",
+        body: JSON.stringify({
+          soundId,
+          userId: session?.user.id,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed");
+    } catch (error) {
+      console.error("Like failed:", error);
+
+      // 🔥 ROLLBACK
+      setIsLiked(wasLiked);
+
+      if (wasLiked && onUnlike && fullSound) {
+        onUnlike({ type: "restore", sound: fullSound });
+      }
+    }
   };
 
   const handleShare = async (title: string, link: string) => {

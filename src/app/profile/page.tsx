@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import GoogleButton from "@/components/auth/GoogleButton";
 import { authClient } from "@/auth-client";
 import Link from "next/link";
+import { Header1 } from "@/components/elements/h1";
 export default function Profile() {
   const { data: session } = authClient.useSession();
 
@@ -10,9 +11,8 @@ export default function Profile() {
     <div>
       {session?.user && (
         <div className="flex w-full flex-col gap-2 items-center justify-center py-10">
-          <p className="text-4xl lg:text-8xl font-bold  text-center uppercase">
-            Hello, {session.user.name}
-          </p>{" "}
+          <Header1>Settings</Header1>
+          Hello, {session.user.name}{" "}
           {session?.user && session.user.role === "ADMIN" && (
             <>
               <br />

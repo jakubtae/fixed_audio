@@ -24,7 +24,7 @@ interface NavigationProps {
 }
 
 export const Navigation = ({ onClose, isMobile = false }: NavigationProps) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const { data: session } = authClient.useSession();
 
   // Handle link click - close mobile nav

@@ -5,6 +5,7 @@ type AudioElementProps = Audio & {
   cdnUrl: string;
   fullSound?: Sound; // 👈 add
   onUnlike?: (action: OptimisticAction) => void;
+  variant?: "default" | "slim";
 };
 
 import { Button } from "../ui/button";
@@ -20,14 +21,6 @@ import AudioMenu from "./AudioMenu";
 import { Sound } from "@/lib/schemas/sound.types";
 import { OptimisticAction } from "./AudioLikedLayout";
 
-// const gradientMap: Record<Audio["type"], string> = {
-//   game: "linear-gradient(to bottom, #b91c1c, #000000)", // red → black
-//   meme: "linear-gradient(to bottom, #facc15, #f97316)", // yellow → orange
-//   movies: "linear-gradient(to bottom, #2563eb, #7c3aed)", // blue → purple
-//   music: "linear-gradient(to bottom, #22c55e, #16a34a)", // green → darker green
-//   other: "linear-gradient(to bottom, #e5e7eb, #9ca3af)", // gray → white
-// };
-
 const AudioElement = ({
   title,
   soundId,
@@ -36,6 +29,7 @@ const AudioElement = ({
   cdnUrl,
   onUnlike,
   fullSound,
+  variant, // 👈 set default value
 }: AudioElementProps) => {
   const audioUrl = `${cdnUrl}/${soundId}.mp3`;
 
@@ -46,18 +40,50 @@ const AudioElement = ({
     return `/${type}.svg`;
   }, []); // ← empty deps = run once per mount
 
+  // 👇 truncate title to 15 characters for slim variant
+  const displayTitle =
+    variant === "slim" && title.length > 15
+      ? `${title.substring(0, 12)}...`
+      : title;
+
+  // 👇 variant-specific styles
+  const containerClasses =
+    variant === "slim"
+      ? "flex items-center justify-between py-1 px-3 rounded-xl shadow-[0_0px_2px_rgba(255,255,255,0.2)] bg-no-repeat bg-cover"
+      : "flex items-center justify-between py-2 px-6 rounded-3xl shadow-[0_0px_4px_rgba(255,255,255,0.2)] bg-no-repeat bg-cover";
+
+  const idClasses =
+    variant === "slim" ? "text-xs text-white w-4" : "text-sm text-white w-6.25";
+
+  const playerContainerClasses =
+    variant === "slim"
+      ? "w-6 h-6 rounded shadow-[0_0px_2px_rgba(255,255,255,0.2)] flex-center"
+      : "w-8.75 h-8.75 rounded shadow-[0_0px_4px_rgba(255,255,255,0.2)] flex-center";
+
+  const titleClasses =
+    variant === "slim"
+      ? "text-xs font-semibold capitalize max-w-28"
+      : "text font-semibold capitalize max-w-54 text-xs sm:text-base";
+
+  const badgeClasses =
+    variant === "slim"
+      ? "py-0.5 px-2 text-[6px] bg-[#444444] text-white rounded-full"
+      : "py-1 px-4 text-[8px] min-[500px]:text-xs bg-[#444444] text-white rounded-full";
+
+  const downloadButtonClasses =
+    variant === "slim"
+      ? "bg-[#EBF4DD] focus:bg-amber-50 hidden lg:block scale-75"
+      : "bg-[#EBF4DD] focus:bg-amber-50 hidden lg:block";
+
   return (
     <div
-      className="flex items-center justify-between py-2 px-6 rounded-3xl
-                 shadow-[0_0px_4px_rgba(255,255,255,0.2)]
-                 bg-no-repeat bg-cover"
+      className={containerClasses}
       style={{ backgroundImage: `url('${bgImage}')` }}
     >
       <div className="flex-center gap-2">
-        <span className="text-sm text-white w-6.25">{id}</span>
+        <span className={idClasses}>{id}</span>
         <div
-          className="w-8.75 h-8.75 rounded
-             shadow-[0_0px_4px_rgba(255,255,255,0.2)] flex-center"
+          className={playerContainerClasses}
           style={{ background: gradientMap[type] }}
         >
           <AnimatedAudioPlayer
@@ -65,30 +91,33 @@ const AudioElement = ({
             title={title}
             artist={type}
             soundId={soundId}
+            variant={variant}
           />
         </div>
         <div className="flex flex-col">
-          <h3 className="text font-semibold capitalize max-w-54 text-xs sm:text-base">
-            {title}
-          </h3>
-          {/* <span className="text-xs font-semibold text-[#9F9F9F]">Autor</span> */}
+          <h3 className={titleClasses}>{displayTitle}</h3>
         </div>
       </div>
       <div className="flex-center gap-2">
-        <Badge className="py-1 px-4 text-[8px] min-[500px]:text-xs  bg-[#444444] text-white rounded-full">
-          {type}
-        </Badge>
-
-        <Button
-          variant="secondary"
-          className="bg-[#EBF4DD] focus:bg-amber-50 hidden lg:block"
-          asChild
-        >
-          <a href={audioUrl} download target="_blank" rel="noopener noreferrer">
-            {" "}
-            <Download strokeWidth={3} />
-          </a>
-        </Button>
+        {variant !== "slim" && (
+          <>
+            <Badge className={badgeClasses}>{type}</Badge>
+            <Button
+              variant="secondary"
+              className={downloadButtonClasses}
+              asChild
+            >
+              <a
+                href={audioUrl}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Download strokeWidth={3} />
+              </a>
+            </Button>
+          </>
+        )}
         <AudioMenu
           title={title}
           soundId={soundId}
@@ -96,6 +125,7 @@ const AudioElement = ({
           cdnUrl={cdnUrl}
           fullSound={fullSound}
           onUnlike={onUnlike}
+          variant={variant}
         />
       </div>
     </div>

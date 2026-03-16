@@ -74,7 +74,7 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
 
       try {
         const params = new URLSearchParams();
-        params.append("limit", "12");
+        params.append("limit", "30");
         params.append("page", pageNumber.toString());
         if (selectedType) params.append("type", selectedType);
         if (debouncedSearch) params.append("search", debouncedSearch);

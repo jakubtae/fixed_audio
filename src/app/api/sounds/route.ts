@@ -5,7 +5,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
 
-    const limit = Number(searchParams.get("limit") ?? 12);
+    const limit = Number(searchParams.get("limit") ?? 30);
     const page = Number(searchParams.get("page") ?? 0);
 
     // Filters
@@ -66,7 +66,7 @@ export async function GET(req: Request) {
     console.error("Error fetching sounds:", error);
     return NextResponse.json(
       { error: "Failed to fetch sounds" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

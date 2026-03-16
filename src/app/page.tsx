@@ -49,21 +49,21 @@ export default async function Home() {
       </div>
 
       {/* Content sections - stack vertically on mobile, grid on desktop */}
-      <Card className="w-full lg:col-span-2 lg:row-span-3 lg:row-start-2 bg-[#EBF4DD] rounded-3xl p-4 text-black font-semibold min-h-30 lg:min-h-0">
+      <Card className="w-full lg:col-span-3 lg:row-span-2 lg:row-start-2 bg-[#EBF4DD] rounded-3xl p-4 text-black font-semibold min-h-30 lg:min-h-0">
         <CardHeader>
           <CardTitle className="capitalize lg:text-2xl">
             Top of This Week
           </CardTitle>
           <CardAction className="">
             <Button variant="link_inherit" asChild className="pt-0">
-              <Link href="">
+              <Link href="/search">
                 View more
                 <ArrowRight />
               </Link>
             </Button>
           </CardAction>
         </CardHeader>
-        <CardContent className="flex flex-col justify-around h-full">
+        <CardContent className="flex flex-col justify-around h-full gap-4">
           {modifiedSounds.map((audio, i) => (
             <AudioElement
               key={audio._id}
@@ -78,7 +78,7 @@ export default async function Home() {
         </CardContent>
       </Card>
 
-      <Card className="w-full lg:col-span-2 lg:row-span-3 lg:col-start-3 lg:row-start-2 bg-[#EBF4DD] rounded-3xl p-4 text-black font-semibold min-h-50 lg:min-h-0">
+      {/* <Card className="w-full lg:col-span-2 lg:row-span-3 lg:col-start-3 lg:row-start-2 bg-[#EBF4DD] rounded-3xl p-4 text-black font-semibold min-h-50 lg:min-h-0">
         <CardHeader>
           <CardTitle className="capitalize lg:text-2xl">
             Recently Played
@@ -100,7 +100,7 @@ export default async function Home() {
         <CardContent>
           <p>Card Content</p>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }

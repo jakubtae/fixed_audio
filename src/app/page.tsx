@@ -65,12 +65,12 @@ export default async function Home() {
 
       {/* Content sections - stack vertically on mobile, grid on desktop */}
       <Card className="w-full lg:col-span-3 lg:row-span-2 lg:row-start-2 bg-[#202020] rounded-3xl p-4 font-semibold min-h-30 lg:min-h-0 text-[#EBF4DD]">
-        <CardHeader>
+        <CardHeader className="flex flex-row w-full items-center justify-between">
           <CardTitle className="capitalize lg:text-2xl">
             Top of This Week
           </CardTitle>
           <CardAction className="">
-            <Button variant="link_inherit" asChild className="pt-0">
+            <Button variant="link_inherit" asChild>
               <Link href="/search">
                 View more
                 <ArrowRight />
@@ -94,13 +94,13 @@ export default async function Home() {
       </Card>
 
       <Card className="w-full lg:col-span-3 lg:row-span-2 lg:row-start-2 bg-[#202020] rounded-3xl p-4 font-semibold min-h-30 lg:min-h-0 text-[#EBF4DD]">
-        <CardHeader>
+        <CardHeader className="flex flex-row w-full items-center justify-between">
           <CardTitle className="capitalize lg:text-2xl">
             Best of all Time
           </CardTitle>
 
           <CardAction className="">
-            <Button variant="link_inherit" asChild className="pt-0">
+            <Button variant="link_inherit" asChild>
               <Link href="/search">
                 View more
                 <ArrowRight />

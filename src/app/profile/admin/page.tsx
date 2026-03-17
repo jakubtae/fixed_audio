@@ -42,7 +42,7 @@ export default function AdminReportsPage() {
 
   const updateStatus = async (
     reportId: string,
-    newStatus: Report["status"]
+    newStatus: Report["status"],
   ) => {
     try {
       const res = await fetch(`/api/reports/`, {
@@ -54,15 +54,56 @@ export default function AdminReportsPage() {
 
       // Optimistically update the UI
       setReports((prev) =>
-        prev.map((r) => (r._id === reportId ? { ...r, status: newStatus } : r))
+        prev.map((r) => (r._id === reportId ? { ...r, status: newStatus } : r)),
       );
     } catch (err) {
       console.error(err);
     }
   };
 
+  // const [loading2, setLoading2] = useState(false);
+  // const [status, setStatus] = useState<string | null>(null);
+
+  // const handleSeed = async () => {
+  //   setLoading(true);
+  //   setStatus(null);
+
+  //   try {
+  //     const res = await fetch("/api/admin/", {
+  //       method: "POST",
+  //     });
+
+  //     const data = await res.json();
+
+  //     if (data.success) {
+  //       setStatus("✅ Seeding completed successfully");
+  //     } else {
+  //       setStatus("❌ Seeding failed");
+  //     }
+  //   } catch (err) {
+  //     setStatus("❌ Error occurred");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
+      {/* <button
+        onClick={handleSeed}
+        disabled={loading2}
+        style={{
+          padding: "10px 16px",
+          background: loading2 ? "#999" : "#000",
+          color: "#fff",
+          cursor: loading2 ? "not-allowed" : "pointer",
+        }}
+      >
+        {loading2 ? "Seeding..." : "Seed Sounds"}
+      </button>
+
+      {status && <p style={{ marginTop: "10px" }}>{status}</p>} */}
+
       <h1 className="text-3xl font-bold mb-6">Reports Administration</h1>
 
       {/* Filters */}

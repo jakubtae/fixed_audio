@@ -79,3 +79,39 @@ export async function getTopSoundsWeek(limit: number) {
     ])
     .toArray();
 }
+
+export async function getTopSoundsAllTime(limit: number) {
+  const db = await getDB();
+  const collection = db.collection("soundStats");
+
+  return collection
+    .aggregate([
+      {
+        $group: {
+          _id: "$soundId",
+          streams: { $sum: "$streams" },
+        },
+      },
+      {
+        $sort: { streams: -1 },
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $lookup: {
+          from: "Sound",
+          localField: "_id",
+          foreignField: "soundId",
+          as: "sound",
+        },
+      },
+      {
+        $unwind: "$sound",
+      },
+      {
+        $replaceRoot: { newRoot: "$sound" },
+      },
+    ])
+    .toArray();
+}

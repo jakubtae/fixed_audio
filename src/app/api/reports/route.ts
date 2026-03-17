@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     if (!soundId || !reason) {
       return NextResponse.json(
         { error: "soundId and reason are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -50,14 +50,14 @@ export async function POST(req: Request) {
     if (error.code === 11000) {
       return NextResponse.json(
         { error: "You already reported this sound" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     console.error("Create report error:", error);
     return NextResponse.json(
       { error: "Failed to create report" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -83,7 +83,7 @@ export async function GET(req: Request) {
       if (!report) {
         return NextResponse.json(
           { error: "Report not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -99,18 +99,17 @@ export async function GET(req: Request) {
     if (soundId) query.soundId = soundId;
 
     const items = await reports.find(query).sort({ createdAt: -1 }).toArray();
-    console.log(items);
     return NextResponse.json(
       items.map((r) => ({
         ...r,
         _id: r._id.toString(),
-      }))
+      })),
     );
   } catch (error) {
     console.error("Fetch reports error:", error);
     return NextResponse.json(
       { error: "Failed to fetch reports" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -125,7 +124,7 @@ export async function PATCH(req: Request) {
     if (!id || !status) {
       return NextResponse.json(
         { error: "id and status are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -140,7 +139,7 @@ export async function PATCH(req: Request) {
           status,
           updatedAt: new Date(),
         },
-      }
+      },
     );
 
     if (!result.matchedCount) {
@@ -152,7 +151,7 @@ export async function PATCH(req: Request) {
     console.error("Update report error:", error);
     return NextResponse.json(
       { error: "Failed to update report" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

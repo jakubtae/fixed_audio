@@ -26,7 +26,11 @@ export async function GET(req: Request) {
     const query: any = {};
 
     if (type) {
-      query.category = type;
+      if (type === "All") {
+        // No filter needed
+      } else {
+        query.category = type;
+      }
     }
 
     if (search) {

@@ -11,12 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { authClient } from "@/auth-client";
-import Link from "next/link";
-import { Button } from "../ui/button";
+
+import { Search } from "lucide-react";
 
 // Categories derived from Sound type
-const CATEGORY_OPTIONS: Sound["category"][] = [
+const CATEGORY_OPTIONS: (Sound["category"] | "All")[] = [
+  "All",
   "Anime & Manga",
   "Games",
   "Memes",
@@ -42,7 +42,9 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Filters / sorting
-  const [selectedType, setSelectedType] = useState<Sound["category"] | "">("");
+  const [selectedType, setSelectedType] = useState<
+    Sound["category"] | "" | "All"
+  >("All");
   const [sortKey, setSortKey] = useState<"views" | "likes" | "createdAt">(
     "views",
   );
@@ -150,11 +152,13 @@ export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
     <div className="w-full max-w-7xl flex-center flex-col gap-6">
       {/* Controls */}
       <div className="flex flex-wrap gap-4 w-full md:w-5/6 mb-4">
+        <Search className="absolute ml-4 mt-3" size={16} />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full md:flex-1 rounded-md border-2 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          placeholder="Search here ..."
+          className="w-full md:flex-1 rounded-md border-2 border-gray-300 px-3 pl-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
         ></input>
 
         <Select

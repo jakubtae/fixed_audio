@@ -15,6 +15,10 @@ import {
   getTopSoundsAllTime,
   getTopSoundsWeek,
 } from "@/lib/schemas/soundStats.model";
+
+import { getDB } from "@/lib/getDb";
+import AnimatedAudioPlayer from "@/components/audio_elements/AudioPlayer";
+import RandomSound from "@/components/audio_elements/RandomSound";
 export default async function Home() {
   const CDNurl = process.env.CDN_URL || "https://cdn.example.com";
   let limit = 3;
@@ -41,6 +45,7 @@ export default async function Home() {
     createdAt: sound.createdAt,
     updatedAt: sound.updatedAt,
   }));
+
   return (
     <div className="font-montserrat flex flex-col lg:grid lg:grid-cols-6 lg:grid-rows-5 gap-4 flex-1 p-2 pt-8 lg:gap-8 sm:p-10 w-full">
       {/* Header section - full width on mobile, grid on desktop */}
@@ -122,6 +127,8 @@ export default async function Home() {
           ))}
         </CardContent>
       </Card>
+
+      <RandomSound cdnUrl={CDNurl} />
 
       {/* <Card className="w-full lg:col-span-2 lg:row-span-3 lg:col-start-5 lg:row-start-2 bg-[#EBF4DD] rounded-3xl p-4 text-black font-semibold min-h-50 lg:min-h-0">
         <CardHeader>

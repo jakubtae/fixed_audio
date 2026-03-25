@@ -5,7 +5,7 @@ export class SoundModel {
   constructor(private collection: Collection<SoundDocument>) {}
 
   async create(
-    sound: Omit<Sound, "_id" | "createdAt" | "updatedAt">
+    sound: Omit<Sound, "_id" | "createdAt" | "updatedAt">,
   ): Promise<Sound> {
     const now = new Date();
     const soundDoc: SoundDocument = {
@@ -36,7 +36,7 @@ export class SoundModel {
 
   async update(
     id: string,
-    updates: Partial<Omit<Sound, "id">>
+    updates: Partial<Omit<Sound, "id">>,
   ): Promise<Sound | null> {
     if (!ObjectId.isValid(id)) return null;
 
@@ -51,7 +51,7 @@ export class SoundModel {
     const updatedDoc = await this.collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       { $set: updateData },
-      { returnDocument: "after" }
+      { returnDocument: "after" },
     );
 
     return updatedDoc ? this.mapDocumentToSound(updatedDoc) : null;
@@ -65,6 +65,14 @@ export class SoundModel {
   async list(): Promise<Sound[]> {
     const docs = await this.collection.find().toArray();
     return docs.map((doc) => this.mapDocumentToSound(doc));
+  }
+
+  async findRandom(): Promise<Sound | null> {
+    const [doc] = await this.collection
+      .aggregate<WithId<SoundDocument>>([{ $sample: { size: 1 } }])
+      .toArray();
+
+    return doc ? this.mapDocumentToSound(doc) : null;
   }
 
   private mapDocumentToSound(doc: WithId<SoundDocument>): Sound {

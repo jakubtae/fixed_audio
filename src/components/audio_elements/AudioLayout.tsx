@@ -34,7 +34,13 @@ const CATEGORY_OPTIONS: (Sound["category"] | "All")[] = [
   "Whatsapp Audios",
 ];
 
-export default function AudioLayout({ cdnUrl }: { cdnUrl: string }) {
+export default function AudioLayout({
+  cdnUrl,
+  filters,
+}: {
+  cdnUrl: string;
+  filters?: string;
+}) {
   const [sounds, setSounds] = useState<Sound[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);

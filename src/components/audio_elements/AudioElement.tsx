@@ -39,7 +39,7 @@ const AudioElement = ({
     type = "other";
   }
   const bgImage = useMemo(() => {
-    return `/${type}.svg`;
+    return `/${type === "other" ? "Other" : type}.svg`;
   }, []); // ← empty deps = run once per mount
 
   // 👇 truncate title to 15 characters for slim variant

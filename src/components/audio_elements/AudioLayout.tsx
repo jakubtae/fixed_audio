@@ -142,7 +142,14 @@ export default function AudioLayout({
       if (el) observer.unobserve(el);
     };
   }, [hasMore, loading, page, fetchSounds]);
+  useEffect(() => {
+    const saved = localStorage.getItem("audio-layout");
+    if (saved) setLayout(saved as "list" | "grid");
+  }, []);
 
+  useEffect(() => {
+    localStorage.setItem("audio-layout", layout);
+  }, [layout]);
   if (isInitialLoad) {
     return (
       <div className="w-full max-w-6xl flex-center flex-col gap-6">

@@ -51,7 +51,8 @@ const AudioElement = ({
     variant === "grid"
       ? `flex flex-col items-center justify-between p-${
           slimOption ? "2" : "4"
-        } rounded-2xl shadow bg-no-repeat bg-cover`
+        } rounded-2xl shadow bg-no-repeat bg-cover 
+         hover:scale-105 transition-transform duration-200 cursor-pointer`
       : slimOption
         ? "flex items-center justify-between py-1 px-3 rounded-xl shadow-[0_0px_2px_rgba(255,255,255,0.2)] bg-no-repeat bg-cover"
         : "flex items-center justify-between py-2 px-6 rounded-3xl shadow-[0_0px_4px_rgba(255,255,255,0.2)] bg-no-repeat bg-cover";

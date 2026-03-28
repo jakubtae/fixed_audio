@@ -8,7 +8,7 @@ type AnimatedAudioPlayerProps = {
   title: string;
   artist?: string;
   soundId: string;
-  variant?: "default" | "slim";
+  slimOption?: boolean;
 };
 
 export default function AnimatedAudioPlayer({
@@ -16,7 +16,7 @@ export default function AnimatedAudioPlayer({
   title,
   soundId,
   artist = "Unknown Artist",
-  variant,
+  slimOption,
 }: AnimatedAudioPlayerProps) {
   const { currentTrack, isPlaying, setTrack, togglePlay } = usePlayerStore();
 
@@ -81,9 +81,9 @@ export default function AnimatedAudioPlayer({
     <button onClick={handleClick} className="flex-center">
       <span>
         {isCurrentTrack && isPlaying ? (
-          <PauseIcon size={variant === "slim" ? 16 : 22} />
+          <PauseIcon size={slimOption ? 16 : 22} />
         ) : (
-          <PlayIcon size={variant === "slim" ? 16 : 22} />
+          <PlayIcon size={slimOption ? 16 : 22} />
         )}
       </span>
     </button>

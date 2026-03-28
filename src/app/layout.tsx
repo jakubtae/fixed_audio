@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Player } from "@/components/navigations/Player";
 import { DesktopNavigationClient } from "@/components/navigations/DesktopNavigationClient";
 import { MobileNavigationClient } from "@/components/navigations/MobileNavigationClient";
+import Footer from "@/components/navigations/PageFooter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,6 +55,7 @@ export default function RootLayout({
             <main className="flex-1 overflow-y-auto p-4 h-full">
               <ScrollArea className="flex-1 w-full h-full">
                 {children}
+                <Footer />
               </ScrollArea>
             </main>
           </div>

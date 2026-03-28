@@ -18,6 +18,7 @@ export default function AutoPlayRandom({
       src: `${cdnUrl}/${sound.soundId}.mp3`,
       title: sound.title,
       soundId: sound.soundId,
+      artist: sound.category,
     });
   }, [sound]);
 

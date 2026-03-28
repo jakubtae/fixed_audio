@@ -13,8 +13,12 @@ import {
 export async function proxy(request: NextRequest) {
   const session = await auth.api.getSession({
     headers: await headers(),
+    query: {
+      disableCookieCache: true, // optional, forces the session to be fetched from the server instead of cache
+    },
   });
   const isLoggedIn = !!session;
+  console.log("Session in middleware:", isLoggedIn);
   const { nextUrl } = request;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);

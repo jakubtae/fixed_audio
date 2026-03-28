@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import AudioMenu from "../audio_elements/AudioMenu";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 export const Player = () => {
   const { currentTrack, isPlaying, togglePlay } = usePlayerStore();
@@ -123,12 +125,23 @@ export const Player = () => {
       {/* Top Row */}
       <div className="flex items-center justify-between w-full">
         <div>
-          <div className="text-sm font-semibold">
-            {currentTrack?.title || "Nothing Playing"}
-          </div>
-          <div className="text-xs text-neutral-400">
-            {currentTrack?.artist || ""}
-          </div>
+          <Button
+            variant="link_inherit"
+            asChild
+            className="flex flex-col items-start"
+          >
+            <Link
+              href={`/sounds/${currentTrack.soundId}`}
+              className="flex flex-col"
+            >
+              <div className="text-sm font-semibold">
+                {currentTrack?.title || "Nothing Playing"}
+              </div>
+              <div className="text-xs text-neutral-400">
+                {currentTrack?.artist || ""}
+              </div>
+            </Link>
+          </Button>
         </div>
 
         <button

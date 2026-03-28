@@ -16,9 +16,8 @@ import {
   getTopSoundsWeek,
 } from "@/lib/schemas/soundStats.model";
 
-import { getDB } from "@/lib/getDb";
-import AnimatedAudioPlayer from "@/components/audio_elements/AudioPlayer";
 import RandomSound from "@/components/audio_elements/RandomSound";
+
 export default async function Home() {
   const CDNurl = process.env.CDN_URL || "https://cdn.example.com";
   let limit = 3;
@@ -47,7 +46,7 @@ export default async function Home() {
   }));
 
   return (
-    <div className="font-montserrat flex flex-col lg:grid lg:grid-cols-6 lg:grid-rows-5 gap-4 flex-1 p-2 pt-8 lg:gap-8 sm:p-10 w-full">
+    <div className="font-montserrat flex flex-col lg:grid lg:grid-cols-6 lg:grid-rows-5 gap-4 flex-1 p-2 pt-8 lg:gap-8 sm:p-10 w-full h-240 lg:h-auto">
       {/* Header section - full width on mobile, grid on desktop */}
       <div className="w-full lg:col-span-4">
         <Header1>
@@ -92,7 +91,7 @@ export default async function Home() {
               type={audio.category}
               soundId={audio.soundId}
               cdnUrl={CDNurl}
-              variant="slim"
+              slimOption={true} // 👈 pass slimOption as true for this section
             />
           ))}
         </CardContent>
@@ -122,7 +121,7 @@ export default async function Home() {
               type={audio.category}
               soundId={audio.soundId}
               cdnUrl={CDNurl}
-              variant="slim"
+              slimOption={true} // 👈 pass slimOption as true for this section
             />
           ))}
         </CardContent>

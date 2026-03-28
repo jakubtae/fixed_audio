@@ -12,7 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Search } from "lucide-react";
+import { LayoutGrid, List, Search } from "lucide-react";
+import { Button } from "../ui/button";
 
 // Categories derived from Sound type
 const CATEGORY_OPTIONS: (Sound["category"] | "All")[] = [
@@ -46,7 +47,7 @@ export default function AudioLayout({
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-
+  const [layout, setLayout] = useState<"list" | "grid">("list");
   // Filters / sorting
   const [selectedType, setSelectedType] = useState<
     Sound["category"] | "" | "All"
@@ -155,9 +156,9 @@ export default function AudioLayout({
   }
 
   return (
-    <div className="w-full max-w-7xl flex-center flex-col gap-6">
+    <div className="w-full flex-center flex-col gap-6">
       {/* Controls */}
-      <div className="flex flex-wrap gap-4 w-full md:w-5/6 mb-4">
+      <div className="flex flex-wrap gap-4 w-full md:w-7/8 mb-4 sticky top-0 bg-[#202020]  z-10 py-4">
         <Search className="absolute ml-4 mt-3" size={16} />
         <input
           type="text"
@@ -201,10 +202,24 @@ export default function AudioLayout({
             <SelectItem value="likes-asc">Least Liked</SelectItem>
           </SelectContent>
         </Select>
+        <Button
+          onClick={() =>
+            setLayout((prev) => (prev === "list" ? "grid" : "list"))
+          }
+          className="border-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 transition"
+        >
+          {layout === "list" ? <LayoutGrid size={16} /> : <List size={16} />}
+        </Button>
       </div>
 
       {/* Sounds */}
-      <div className="flex flex-col gap-2 w-full lg:w-5/6">
+      <div
+        className={`w-full md:w-7/8 ${
+          layout === "grid"
+            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+            : "flex flex-col gap-2"
+        }`}
+      >
         {sounds.map((audio, i) => (
           <AudioElement
             key={audio._id}
@@ -213,6 +228,7 @@ export default function AudioLayout({
             type={audio.category}
             soundId={audio.soundId}
             cdnUrl={cdnUrl}
+            variant={layout} // "grid" | "list"
           />
         ))}
 

@@ -27,7 +27,7 @@ type AudioElementProps = Audio & {
   cdnUrl: string;
   onUnlike?: (action: OptimisticAction) => void;
   fullSound?: Sound;
-  variant?: "default" | "slim";
+  slimOption?: boolean; // 👈 new prop to control slim mode
 };
 
 import { useMemo, useState } from "react";
@@ -52,7 +52,7 @@ const AudioMenu = ({
   type,
   onUnlike,
   fullSound,
-  variant,
+  slimOption = false, // 👈 default to false
 }: AudioElementProps) => {
   const { data: session } = authClient.useSession();
   const baseLink = typeof window !== "undefined" ? window.location.origin : "";
@@ -118,7 +118,7 @@ const AudioMenu = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-52">
           <DropdownMenuGroup>
-            {variant == "slim" && (
+            {slimOption && (
               <DropdownMenuItem asChild>
                 <a
                   href={audioUrl}

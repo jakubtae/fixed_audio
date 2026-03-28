@@ -37,6 +37,7 @@ export const Navigation = ({ onClose, isMobile = false }: NavigationProps) => {
   const logOut = async () => {
     try {
       await authClient.signOut();
+      await authClient.revokeSession({ token: "session-token" });
     } catch (error: any) {
       alert("Error logging out: " + error.message);
     }
@@ -44,7 +45,7 @@ export const Navigation = ({ onClose, isMobile = false }: NavigationProps) => {
 
   // For desktop, we still want the collapse functionality
   // For mobile, we want a fixed width (not collapsed)
-  const navWidth = isMobile ? "w-64" : collapsed ? "w-16" : "w-64";
+  const navWidth = isMobile ? "w-54" : collapsed ? "w-16" : "w-54";
 
   return (
     <aside

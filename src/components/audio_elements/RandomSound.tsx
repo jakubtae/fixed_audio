@@ -14,7 +14,7 @@ export default function RandomSound({ cdnUrl }: { cdnUrl: string }) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col mt-4 lg:mt-0">
       <Button variant="accent" onClick={loadRandom}>
         Check a random sound
       </Button>

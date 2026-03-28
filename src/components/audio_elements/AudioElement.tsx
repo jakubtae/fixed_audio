@@ -5,7 +5,8 @@ type AudioElementProps = Audio & {
   cdnUrl: string;
   fullSound?: Sound; // 👈 add
   onUnlike?: (action: OptimisticAction) => void;
-  variant?: "default" | "slim";
+  variant?: "grid" | "list";
+  slimOption?: boolean;
 };
 
 import { Button } from "../ui/button";
@@ -30,6 +31,7 @@ const AudioElement = ({
   onUnlike,
   fullSound,
   variant, // 👈 set default value
+  slimOption,
 }: AudioElementProps) => {
   const audioUrl = `${cdnUrl}/${soundId}.mp3`;
 
@@ -42,92 +44,145 @@ const AudioElement = ({
 
   // 👇 truncate title to 15 characters for slim variant
   const displayTitle =
-    variant === "slim" && title.length > 15
-      ? `${title.substring(0, 12)}...`
-      : title;
+    slimOption && title.length > 15 ? `${title.substring(0, 12)}...` : title;
 
   // 👇 variant-specific styles
   const containerClasses =
-    variant === "slim"
-      ? "flex items-center justify-between py-1 px-3 rounded-xl shadow-[0_0px_2px_rgba(255,255,255,0.2)] bg-no-repeat bg-cover"
-      : "flex items-center justify-between py-2 px-6 rounded-3xl shadow-[0_0px_4px_rgba(255,255,255,0.2)] bg-no-repeat bg-cover";
+    variant === "grid"
+      ? `flex flex-col items-center justify-between p-${
+          slimOption ? "2" : "4"
+        } rounded-2xl shadow bg-no-repeat bg-cover`
+      : slimOption
+        ? "flex items-center justify-between py-1 px-3 rounded-xl shadow-[0_0px_2px_rgba(255,255,255,0.2)] bg-no-repeat bg-cover"
+        : "flex items-center justify-between py-2 px-6 rounded-3xl shadow-[0_0px_4px_rgba(255,255,255,0.2)] bg-no-repeat bg-cover";
 
-  const idClasses =
-    variant === "slim" ? "text-xs text-white w-4" : "text-sm text-white w-6.25";
+  const idClasses = slimOption
+    ? "text-xs text-white w-4"
+    : "text-sm text-white w-6.25";
 
-  const playerContainerClasses =
-    variant === "slim"
-      ? "w-6 h-6 rounded shadow-[0_0px_2px_rgba(255,255,255,0.2)] flex-center"
-      : "w-8.75 h-8.75 rounded shadow-[0_0px_4px_rgba(255,255,255,0.2)] flex-center";
+  const playerContainerClasses = slimOption
+    ? "w-6 h-6 rounded shadow-[0_0px_2px_rgba(255,255,255,0.2)] flex-center"
+    : "w-8.75 h-8.75 rounded shadow-[0_0px_4px_rgba(255,255,255,0.2)] flex-center";
 
-  const titleClasses =
-    variant === "slim"
-      ? "text-xs font-semibold capitalize max-w-28"
-      : "text font-semibold capitalize max-w-54 text-xs sm:text-base";
+  const titleClasses = slimOption
+    ? "text-xs font-semibold capitalize max-w-28"
+    : "text font-semibold capitalize max-w-54 text-xs sm:text-base";
 
-  const badgeClasses =
-    variant === "slim"
-      ? "py-0.5 px-2 text-[6px] bg-[#444444] text-white rounded-full"
-      : "py-1 px-4 text-[8px] min-[500px]:text-xs bg-[#444444] text-white rounded-full";
+  const badgeClasses = slimOption
+    ? "py-0.5 px-2 text-[6px] bg-[#444444] text-white rounded-full"
+    : "py-1 px-4 text-[8px] min-[500px]:text-xs bg-[#444444] text-white rounded-full";
 
-  const downloadButtonClasses =
-    variant === "slim"
-      ? "bg-[#EBF4DD] focus:bg-amber-50 hidden lg:block scale-75"
-      : "bg-[#EBF4DD] focus:bg-amber-50 hidden lg:block";
+  const downloadButtonClasses = slimOption
+    ? "bg-[#EBF4DD] focus:bg-amber-50 hidden lg:block scale-75"
+    : "bg-[#EBF4DD] focus:bg-amber-50 hidden lg:block";
 
   return (
     <div
       className={containerClasses}
       style={{ backgroundImage: `url('${bgImage}')` }}
     >
-      <div className="flex-center gap-2">
-        <span className={idClasses}>{id}</span>
-        <div
-          className={playerContainerClasses}
-          style={{ background: gradientMap[type] }}
-        >
-          <AnimatedAudioPlayer
-            src={audioUrl}
-            title={title}
-            artist={type}
-            soundId={soundId}
-            variant={variant}
-          />
-        </div>
-        <div className="flex flex-col">
-          <h3 className={titleClasses}>{displayTitle}</h3>
-        </div>
-      </div>
-      <div className="flex-center gap-2">
-        {variant !== "slim" && (
-          <>
-            <Badge className={badgeClasses}>{type}</Badge>
-            <Button
-              variant="secondary"
-              className={downloadButtonClasses}
-              asChild
+      {variant === "grid" ? (
+        <>
+          {/* GRID LAYOUT */}
+          <div className="flex flex-col items-center gap-2 w-full">
+            <div
+              className={`${
+                slimOption ? "w-10 h-10" : "w-14 h-14"
+              } rounded flex-center`}
+              style={{ background: gradientMap[type] }}
             >
-              <a
-                href={audioUrl}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Download strokeWidth={3} />
-              </a>
-            </Button>
-          </>
-        )}
-        <AudioMenu
-          title={title}
-          soundId={soundId}
-          type={type}
-          cdnUrl={cdnUrl}
-          fullSound={fullSound}
-          onUnlike={onUnlike}
-          variant={variant}
-        />
-      </div>
+              <AnimatedAudioPlayer
+                src={audioUrl}
+                title={title}
+                artist={type}
+                soundId={soundId}
+                slimOption={slimOption}
+              />
+            </div>
+
+            <h3
+              className={`text-center font-semibold capitalize ${
+                slimOption ? "text-[10px]" : "text-xs"
+              } line-clamp-2`}
+            >
+              {displayTitle}
+            </h3>
+
+            {!slimOption && (
+              <Badge className="text-[8px] px-2 py-0.5">{type}</Badge>
+            )}
+          </div>
+
+          <div className="flex gap-2 mt-2">
+            <AudioMenu
+              title={title}
+              soundId={soundId}
+              type={type}
+              cdnUrl={cdnUrl}
+              fullSound={fullSound}
+              onUnlike={onUnlike}
+              slimOption={slimOption}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          {/* LIST LAYOUT (your original) */}
+          <div className="flex-center gap-2">
+            <span className={idClasses}>{id}</span>
+
+            <div
+              className={playerContainerClasses}
+              style={{ background: gradientMap[type] }}
+            >
+              <AnimatedAudioPlayer
+                src={audioUrl}
+                title={title}
+                artist={type}
+                soundId={soundId}
+                slimOption={slimOption}
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <h3 className={titleClasses}>{displayTitle}</h3>
+            </div>
+          </div>
+
+          <div className="flex-center gap-2">
+            {!slimOption && (
+              <>
+                <Badge className={badgeClasses}>{type}</Badge>
+
+                <Button
+                  variant="secondary"
+                  className={downloadButtonClasses}
+                  asChild
+                >
+                  <a
+                    href={audioUrl}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Download strokeWidth={3} />
+                  </a>
+                </Button>
+              </>
+            )}
+
+            <AudioMenu
+              title={title}
+              soundId={soundId}
+              type={type}
+              cdnUrl={cdnUrl}
+              fullSound={fullSound}
+              onUnlike={onUnlike}
+              slimOption={slimOption}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

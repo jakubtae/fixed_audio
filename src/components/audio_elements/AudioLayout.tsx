@@ -14,6 +14,7 @@ import {
 
 import { LayoutGrid, List, Search } from "lucide-react";
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 // Categories derived from Sound type
 const CATEGORY_OPTIONS: (Sound["category"] | "All")[] = [
@@ -62,7 +63,13 @@ export default function AudioLayout({
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [timeframe, setTimeframe] = useState<
     "today" | "this-week" | "all-time"
-  >("all-time");
+  >(
+    filters === "today"
+      ? "today"
+      : filters === "this-week"
+        ? "this-week"
+        : "all-time",
+  );
   // Search
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -171,6 +178,13 @@ export default function AudioLayout({
   useEffect(() => {
     localStorage.setItem("audio-layout", layout);
   }, [layout]);
+
+  const handleTimeFrameChange = (value: "today" | "this-week" | "all-time") => {
+    setTimeframe(value);
+    router.push(`/search?filters=${value}`);
+  };
+
+  const router = useRouter();
   if (isInitialLoad) {
     return (
       <div className="w-full max-w-6xl flex-center flex-col gap-6">
@@ -233,7 +247,7 @@ export default function AudioLayout({
         <Select
           value={timeframe}
           onValueChange={(value) =>
-            setTimeframe(value as "today" | "this-week" | "all-time")
+            handleTimeFrameChange(value as "today" | "this-week" | "all-time")
           }
         >
           <SelectTrigger className="border-2">

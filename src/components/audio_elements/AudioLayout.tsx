@@ -96,7 +96,7 @@ export default function AudioLayout({
         if (debouncedSearch) params.append("search", debouncedSearch);
         params.append("sortKey", sortKey);
         params.append("sortOrder", sortOrder);
-
+        console.log("Fetching");
         const res = await fetch(`/api/sounds?${params.toString()}`);
         if (!res.ok) throw new Error("Failed to fetch sounds");
 
@@ -113,7 +113,7 @@ export default function AudioLayout({
         setIsInitialLoad(false);
       }
     },
-    [selectedType, sortKey, sortOrder, debouncedSearch],
+    [selectedType, sortKey, sortOrder, timeframe, debouncedSearch],
   );
 
   const handleLayoutToggle = () => {

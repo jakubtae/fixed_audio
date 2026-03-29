@@ -26,7 +26,6 @@ export async function GET(req: Request) {
     // =========================
     // 🔥 TIMEFRAME (TODAY / THIS-WEEK)
     // =========================
-    console.log("timeframe", filters);
     if (filters === "today" || filters === "this-week") {
       const statsCollection = db.collection("soundStats");
       const now = new Date();

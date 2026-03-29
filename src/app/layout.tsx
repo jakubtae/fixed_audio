@@ -52,11 +52,12 @@ export default function RootLayout({
             <MobileNavigationClient />
 
             {/* Main content - always full width on mobile, adjusted on desktop */}
-            <main className="flex-1 overflow-y-auto p-4 h-full">
-              <ScrollArea className="flex-1 w-full h-full">
+            <main className="flex flex-col flex-1 p-4">
+              <ScrollArea className="flex-1 w-full overflow-y-auto">
                 {children}
-                <Footer />
               </ScrollArea>
+
+              <Footer />
             </main>
           </div>
 

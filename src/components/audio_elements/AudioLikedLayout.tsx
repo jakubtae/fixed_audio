@@ -14,6 +14,7 @@ import {
 import { authClient } from "@/auth-client";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { LayoutGrid, List } from "lucide-react";
 
 // Categories derived from Sound type
 const CATEGORY_OPTIONS: Sound["category"][] = [
@@ -51,6 +52,7 @@ export default function AudioLikedLayout({
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [layout, setLayout] = useState<"list" | "grid">("list");
 
   // Filters / sorting
   const [selectedType, setSelectedType] = useState<Sound["category"] | "">("");
@@ -88,7 +90,14 @@ export default function AudioLikedLayout({
 
     return () => clearTimeout(timeout);
   }, [search]);
+  useEffect(() => {
+    const saved = localStorage.getItem("audio-layout");
+    if (saved) setLayout(saved as "list" | "grid");
+  }, []);
 
+  useEffect(() => {
+    localStorage.setItem("audio-layout", layout);
+  }, [layout]);
   const fetchLikedSounds = useCallback(
     async (pageNumber = 0, reset = false) => {
       if (fetchingRef.current) return;
@@ -247,20 +256,35 @@ export default function AudioLikedLayout({
             <SelectItem value="likes-asc">Least Liked</SelectItem>
           </SelectContent>
         </Select>
+        <Button
+          onClick={() =>
+            setLayout((prev) => (prev === "list" ? "grid" : "list"))
+          }
+          className="border-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 transition"
+        >
+          {layout === "list" ? <LayoutGrid size={16} /> : <List size={16} />}
+        </Button>
       </div>
 
       {/* Sounds */}
-      <div className="flex flex-col gap-2 w-full lg:w-5/6">
+      <div
+        className={`w-full md:w-7/8 ${
+          layout === "grid"
+            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+            : "flex flex-col gap-2"
+        }`}
+      >
         {sounds.map((audio, i) => (
           <AudioElement
-            key={i}
+            key={audio._id}
             id={i + 1}
             title={audio.title}
             type={audio.category}
             soundId={audio.soundId}
             cdnUrl={cdnUrl}
-            fullSound={audio} // 👈 pass full object
+            variant={layout} // "grid" | "list"
             onUnlike={handleOptimisticUpdate}
+            fullSound={audio} // 👈 pass full object
           />
         ))}
 

@@ -52,7 +52,9 @@ export default function AudioLikedLayout({
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [layout, setLayout] = useState<"list" | "grid">("list");
+  const [layout, setLayout] = useState<"list" | "grid">(
+    localStorage.getItem("audio-layout") === "grid" ? "grid" : "list",
+  );
 
   // Filters / sorting
   const [selectedType, setSelectedType] = useState<Sound["category"] | "">("");
@@ -67,7 +69,10 @@ export default function AudioLikedLayout({
 
   const sentinelRef = useRef<HTMLDivElement>(null);
   const fetchingRef = useRef(false);
-
+  const handleLayoutToggle = () => {
+    setLayout((prev) => (prev === "list" ? "grid" : "list"));
+    localStorage.setItem("audio-layout", layout === "list" ? "grid" : "list");
+  };
   const handleOptimisticUpdate = useCallback((action: OptimisticAction) => {
     setSounds((prev) => {
       if (action.type === "remove") {
@@ -257,9 +262,7 @@ export default function AudioLikedLayout({
           </SelectContent>
         </Select>
         <Button
-          onClick={() =>
-            setLayout((prev) => (prev === "list" ? "grid" : "list"))
-          }
+          onClick={() => handleLayoutToggle()}
           className="border-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 transition"
         >
           {layout === "list" ? <LayoutGrid size={16} /> : <List size={16} />}

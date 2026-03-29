@@ -14,7 +14,7 @@ import {
 
 import { LayoutGrid, List, Search } from "lucide-react";
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // Categories derived from Sound type
 const CATEGORY_OPTIONS: (Sound["category"] | "All")[] = [
@@ -39,9 +39,11 @@ const CATEGORY_OPTIONS: (Sound["category"] | "All")[] = [
 export default function AudioLayout({
   cdnUrl,
   filters,
+  query,
 }: {
   cdnUrl: string;
   filters?: string;
+  query?: string;
 }) {
   const [sounds, setSounds] = useState<Sound[]>([]);
   const [page, setPage] = useState(0);
@@ -71,7 +73,7 @@ export default function AudioLayout({
         : "all-time",
   );
   // Search
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(query || "");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -85,6 +87,23 @@ export default function AudioLayout({
 
     return () => clearTimeout(timeout);
   }, [search]);
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    router.push(pathname + "?" + createQueryString("query", e.target.value));
+  };
 
   // Fetch sounds
   const fetchSounds = useCallback(
@@ -181,7 +200,7 @@ export default function AudioLayout({
 
   const handleTimeFrameChange = (value: "today" | "this-week" | "all-time") => {
     setTimeframe(value);
-    router.push(`/search?filters=${value}`);
+    router.push(pathname + "?" + createQueryString("filters", value));
   };
 
   const router = useRouter();
@@ -205,7 +224,7 @@ export default function AudioLayout({
         <input
           type="text"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={handleQueryChange}
           placeholder="Search here ..."
           className="w-full md:flex-1 rounded-md border-2 border-gray-300 px-3 pl-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
         ></input>
@@ -287,6 +306,10 @@ export default function AudioLayout({
             variant={layout} // "grid" | "list"
           />
         ))}
+
+        {sounds.length === 0 && !loading && (
+          <p className="text-gray-500 text-sm py-4">No sounds found.</p>
+        )}
 
         {hasMore && (
           <div ref={sentinelRef} className="h-10 flex-center">

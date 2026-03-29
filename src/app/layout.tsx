@@ -57,7 +57,7 @@ export default function RootLayout({
                 {children}
               </ScrollArea>
 
-              <Footer />
+              {/* <Footer /> */}
             </main>
           </div>
 

@@ -47,7 +47,9 @@ export default function AudioLayout({
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [layout, setLayout] = useState<"list" | "grid">("list");
+  const [layout, setLayout] = useState<"list" | "grid">(
+    localStorage.getItem("audio-layout") === "grid" ? "grid" : "list",
+  );
   // Filters / sorting
   const [selectedType, setSelectedType] = useState<
     Sound["category"] | "" | "All"
@@ -109,6 +111,10 @@ export default function AudioLayout({
     [selectedType, sortKey, sortOrder, debouncedSearch],
   );
 
+  const handleLayoutToggle = () => {
+    setLayout((prev) => (prev === "list" ? "grid" : "list"));
+    localStorage.setItem("audio-layout", layout === "list" ? "grid" : "list");
+  };
   // Initial fetch
   useEffect(() => {
     fetchSounds(0, true);
@@ -210,9 +216,7 @@ export default function AudioLayout({
           </SelectContent>
         </Select>
         <Button
-          onClick={() =>
-            setLayout((prev) => (prev === "list" ? "grid" : "list"))
-          }
+          onClick={() => handleLayoutToggle()}
           className="border-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 transition"
         >
           {layout === "list" ? <LayoutGrid size={16} /> : <List size={16} />}

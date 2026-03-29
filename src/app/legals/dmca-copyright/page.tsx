@@ -1,7 +1,7 @@
 const TermsOfServicePage: React.FC = () => {
   return (
-    <div id="dcma" className="min-h-screen  p-4 md:p-8">
-      <div className="max-w-4xl mx-auto text-white-800">
+    <div id="dcma" className="min-h-screen  p-4 md:p-8 w-full">
+      <div className="max-w-4xl md:mx-auto text-white-800">
         <h1 className="text-3xl font-bold mb-6">
           nobsounds DMCA Copyright Policy
         </h1>

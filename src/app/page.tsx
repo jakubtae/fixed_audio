@@ -74,7 +74,7 @@ export default async function Home() {
             </CardTitle>
             <CardAction className="">
               <Button variant="link_inherit" asChild>
-                <Link href="/search">
+                <Link href="/search?filter=this-week">
                   View more
                   <ArrowRight />
                 </Link>
@@ -102,8 +102,8 @@ export default async function Home() {
             </CardTitle>
             <CardAction className="">
               <Button variant="link_inherit" asChild>
-                <Link href="/search">
-                  View more
+                <Link href="/search?filter=all-time">
+                  Discover
                   <ArrowRight />
                 </Link>
               </Button>

@@ -9,10 +9,10 @@ export async function GET(req: Request) {
     const page = Number(searchParams.get("page") ?? 0);
 
     // Filters
-    const type = searchParams.get("type"); // category filter
-    const search = searchParams.get("search"); // 🔍 title search
-
-    // Sorting
+    const type = searchParams.get("type");
+    const search = searchParams.get("search");
+    const filters = searchParams.get("filters"); // today | this-week | null
+    // Sorting (only for all-time)
     const sortKey =
       (searchParams.get("sortKey") as "views" | "likes" | "createdAt") ||
       "createdAt";
@@ -20,27 +20,112 @@ export async function GET(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("Dev");
+
     const soundsCollection = db.collection("Sound");
 
-    // Build query
-    const query: any = {};
+    // =========================
+    // 🔥 TIMEFRAME (TODAY / THIS-WEEK)
+    // =========================
+    console.log("timeframe", filters);
+    if (filters === "today" || filters === "this-week") {
+      const statsCollection = db.collection("soundStats");
+      const now = new Date();
+      let dateFrom: string;
 
-    if (type) {
-      if (type === "All") {
-        // No filter needed
+      if (filters === "today") {
+        dateFrom = now.toISOString().slice(0, 10);
       } else {
-        query.category = type;
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        dateFrom = weekAgo.toISOString().slice(0, 10);
       }
+
+      const pipeline: any[] = [
+        {
+          $match: {
+            date: { $gte: dateFrom },
+          },
+        },
+        {
+          $group: {
+            _id: "$soundId",
+            streams: { $sum: "$streams" },
+          },
+        },
+        {
+          $sort: { streams: -1 }, // 🔥 always trending by usage
+        },
+        {
+          $skip: page * limit,
+        },
+        {
+          $limit: limit,
+        },
+        {
+          $lookup: {
+            from: "Sound",
+            localField: "_id",
+            foreignField: "soundId",
+            as: "sound",
+          },
+        },
+        {
+          $unwind: "$sound",
+        },
+        {
+          $replaceRoot: { newRoot: "$sound" },
+        },
+      ];
+
+      // Apply filters AFTER lookup
+      if (type && type !== "All") {
+        pipeline.push({
+          $match: { category: type },
+        });
+      }
+
+      if (search) {
+        pipeline.push({
+          $match: {
+            title: { $regex: search, $options: "i" },
+          },
+        });
+      }
+      const sounds = await statsCollection.aggregate(pipeline).toArray();
+
+      return NextResponse.json({
+        items: sounds.map((sound) => ({
+          _id: sound._id.toString(),
+          title: sound.title,
+          soundId: sound.soundId,
+          category: sound.category,
+          views: sound.views,
+          likes: sound.likes,
+          createdAt: sound.createdAt,
+          updatedAt: sound.updatedAt,
+        })),
+        hasMore: sounds.length === limit,
+        page: page + 1,
+      });
+    }
+
+    // =========================
+    // 🧱 ALL-TIME (DEFAULT)
+    // =========================
+
+    const query: any = {};
+    console.log("all time");
+    if (type && type !== "All") {
+      query.category = type;
     }
 
     if (search) {
       query.title = {
         $regex: search,
-        $options: "i", // case-insensitive
+        $options: "i",
       };
     }
 
-    // Fetch data
     const sounds = await soundsCollection
       .find(query)
       .sort({ [sortKey]: sortOrder })
@@ -48,7 +133,6 @@ export async function GET(req: Request) {
       .limit(limit)
       .toArray();
 
-    // Check if there are more items
     const totalInQuery = await soundsCollection.countDocuments(query);
     const hasMore = (page + 1) * limit < totalInQuery;
 

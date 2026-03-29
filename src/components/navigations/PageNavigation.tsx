@@ -15,6 +15,7 @@ import {
   Menu,
   SearchIcon,
   Settings,
+  User,
   X,
 } from "lucide-react";
 
@@ -115,14 +116,15 @@ export const Navigation = ({ onClose, isMobile = false }: NavigationProps) => {
           collapsed={collapsed && !isMobile}
           onClick={handleLinkClick}
         />
-
-        <NavItem
-          href="/liked"
-          icon={<Heart />}
-          label="Liked"
-          collapsed={collapsed && !isMobile}
-          onClick={handleLinkClick}
-        />
+        {session?.user && (
+          <NavItem
+            href="/liked"
+            icon={<Heart />}
+            label="Liked"
+            collapsed={collapsed && !isMobile}
+            onClick={handleLinkClick}
+          />
+        )}
       </div>
       <div className="flex-col gap-2 p-3 pb-24">
         {session?.user && (
@@ -144,7 +146,7 @@ export const Navigation = ({ onClose, isMobile = false }: NavigationProps) => {
         {!session?.user ? (
           <NavItem
             href="/profile"
-            icon={<LogOut className="text-blue-500" />}
+            icon={<User className="text-blue-500" />}
             label="Log In"
             style={{ color: "Blue" }}
             collapsed={collapsed && !isMobile}

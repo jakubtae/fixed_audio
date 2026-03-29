@@ -48,17 +48,21 @@ export default function AudioLayout({
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [layout, setLayout] = useState<"list" | "grid">(
-    localStorage.getItem("audio-layout") === "grid" ? "grid" : "list",
+    // localStorage.getItem("audio-layout") === "grid" ? "grid" : "list",
+    "grid",
   );
   // Filters / sorting
   const [selectedType, setSelectedType] = useState<
     Sound["category"] | "" | "All"
   >("All");
+
   const [sortKey, setSortKey] = useState<"views" | "likes" | "createdAt">(
     "views",
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
+  const [timeframe, setTimeframe] = useState<
+    "today" | "this-week" | "all-time"
+  >("all-time");
   // Search
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -85,6 +89,7 @@ export default function AudioLayout({
 
       try {
         const params = new URLSearchParams();
+        params.append("filters", timeframe);
         params.append("limit", "30");
         params.append("page", pageNumber.toString());
         if (selectedType) params.append("type", selectedType);
@@ -113,7 +118,10 @@ export default function AudioLayout({
 
   const handleLayoutToggle = () => {
     setLayout((prev) => (prev === "list" ? "grid" : "list"));
-    localStorage.setItem("audio-layout", layout === "list" ? "grid" : "list");
+    window?.localStorage?.setItem(
+      "audio-layout",
+      layout === "list" ? "grid" : "list",
+    );
   };
   // Initial fetch
   useEffect(() => {
@@ -126,7 +134,14 @@ export default function AudioLayout({
     setPage(0);
     setHasMore(true);
     fetchSounds(0, true);
-  }, [selectedType, sortKey, sortOrder, debouncedSearch, fetchSounds]);
+  }, [
+    selectedType,
+    sortKey,
+    sortOrder,
+    timeframe,
+    debouncedSearch,
+    fetchSounds,
+  ]);
 
   // Infinite scroll
   useEffect(() => {
@@ -209,10 +224,26 @@ export default function AudioLayout({
             <SelectValue placeholder="Sort" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="views-desc">Most Viewed</SelectItem>
-            <SelectItem value="views-asc">Least Viewed</SelectItem>
-            <SelectItem value="likes-desc">Most Liked</SelectItem>
-            <SelectItem value="likes-asc">Least Liked</SelectItem>
+            <SelectItem value="views-desc">Highest Views</SelectItem>
+            <SelectItem value="views-asc">Lowest Views</SelectItem>
+            <SelectItem value="likes-desc">Most Likes</SelectItem>
+            <SelectItem value="likes-asc">Least Likes</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select
+          value={timeframe}
+          onValueChange={(value) =>
+            setTimeframe(value as "today" | "this-week" | "all-time")
+          }
+        >
+          <SelectTrigger className="border-2">
+            <SelectValue placeholder="Timeframe" />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectItem value="today">Today</SelectItem>
+            <SelectItem value="this-week">This Week</SelectItem>
+            <SelectItem value="all-time">All Time</SelectItem>
           </SelectContent>
         </Select>
         <Button

@@ -6,11 +6,7 @@
 export const publicRoutes = [
   "/",
   "/profile",
-  "/start",
   "/search",
-  "/liked",
-  "/plugins",
-  "/editor",
   "/legals",
   "/legals/terms-of-service",
   "/legals/privacy-policy",

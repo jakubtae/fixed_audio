@@ -52,9 +52,7 @@ export default function AudioLikedLayout({
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [layout, setLayout] = useState<"list" | "grid">(
-    localStorage.getItem("audio-layout") === "grid" ? "grid" : "list",
-  );
+  const [layout, setLayout] = useState<"list" | "grid">("grid");
 
   // Filters / sorting
   const [selectedType, setSelectedType] = useState<Sound["category"] | "">("");
@@ -71,7 +69,12 @@ export default function AudioLikedLayout({
   const fetchingRef = useRef(false);
   const handleLayoutToggle = () => {
     setLayout((prev) => (prev === "list" ? "grid" : "list"));
-    localStorage.setItem("audio-layout", layout === "list" ? "grid" : "list");
+    if (typeof window !== "undefined") {
+      window?.localStorage?.setItem(
+        "audio-layout",
+        layout === "list" ? "grid" : "list",
+      );
+    }
   };
   const handleOptimisticUpdate = useCallback((action: OptimisticAction) => {
     setSounds((prev) => {

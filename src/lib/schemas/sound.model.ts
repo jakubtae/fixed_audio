@@ -67,12 +67,14 @@ export class SoundModel {
     return docs.map((doc) => this.mapDocumentToSound(doc));
   }
 
-  async findRandom(): Promise<Sound | null> {
-    const [doc] = await this.collection
-      .aggregate<WithId<SoundDocument>>([{ $sample: { size: 1 } }])
+  async findRandom(): Promise<Sound[] | null> {
+    const docs = await this.collection
+      .aggregate<WithId<SoundDocument>>([{ $sample: { size: 8 } }])
       .toArray();
 
-    return doc ? this.mapDocumentToSound(doc) : null;
+    return docs.length > 0
+      ? docs.map((doc) => this.mapDocumentToSound(doc))
+      : null;
   }
 
   private mapDocumentToSound(doc: WithId<SoundDocument>): Sound {

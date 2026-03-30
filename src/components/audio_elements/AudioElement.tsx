@@ -21,6 +21,7 @@ import { gradientMap } from "@/lib/typeColors";
 import AudioMenu from "./AudioMenu";
 import { Sound } from "@/lib/schemas/sound.types";
 import { OptimisticAction } from "./AudioLikedLayout";
+import Link from "next/link";
 
 const AudioElement = ({
   title,
@@ -145,9 +146,17 @@ const AudioElement = ({
               />
             </div>
 
-            <div className="flex flex-col">
-              <h3 className={titleClasses}>{displayTitle}</h3>
-            </div>
+            <Button
+              variant="link_inherit"
+              asChild
+              className="py-0 font-semibold"
+            >
+              <Link href={`/sounds/${soundId}`} className="bg-red-500">
+                <div className="flex flex-col">
+                  <h3 className={titleClasses}>{displayTitle}</h3>
+                </div>
+              </Link>
+            </Button>
           </div>
 
           <div className="flex-center gap-2">

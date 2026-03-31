@@ -151,7 +151,7 @@ const AudioElement = ({
               asChild
               className="py-0 font-semibold"
             >
-              <Link href={`/sounds/${soundId}`} className="bg-red-500">
+              <Link href={`/sounds/${soundId}`}>
                 <div className="flex flex-col">
                   <h3 className={titleClasses}>{displayTitle}</h3>
                 </div>

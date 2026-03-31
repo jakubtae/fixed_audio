@@ -22,6 +22,7 @@ import AudioMenu from "./AudioMenu";
 import { Sound } from "@/lib/schemas/sound.types";
 import { OptimisticAction } from "./AudioLikedLayout";
 import Link from "next/link";
+import { playSound } from "./PlaySound";
 
 const AudioElement = ({
   title,
@@ -82,6 +83,9 @@ const AudioElement = ({
     <div
       className={containerClasses}
       style={{ backgroundImage: `url('${bgImage}')` }}
+      onClick={() => {
+        playSound({ src: audioUrl, soundId, artist: type, title });
+      }}
     >
       {variant === "grid" ? (
         <>
@@ -102,13 +106,17 @@ const AudioElement = ({
               />
             </div>
 
-            <h3
-              className={`text-center font-semibold capitalize ${
-                slimOption ? "text-[10px]" : "text-xs"
-              } line-clamp-2`}
+            <Button
+              variant="link_inherit"
+              asChild
+              className="py-0 font-semibold"
             >
-              {displayTitle}
-            </h3>
+              <Link href={`/sounds/${soundId}`}>
+                <div className="flex flex-col">
+                  <h3 className={titleClasses}>{displayTitle}</h3>
+                </div>
+              </Link>
+            </Button>
 
             {!slimOption && (
               <Badge className="text-[8px] px-2 py-0.5">{type}</Badge>

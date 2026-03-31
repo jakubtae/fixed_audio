@@ -25,9 +25,9 @@ export default async function Page({
   return (
     <div className="flex flex-col flex-center py-10 ">
       <div
-        className="flex items-center justify-between gap-4 py-2 px-6 rounded-3xl
+        className="flex items-center justify-between gap-4 py-4 px-6 rounded-3xl
                  shadow-[0_0px_4px_rgba(255,255,255,0.2)]
-                 bg-no-repeat bg-cover "
+                 bg-no-repeat bg-cover mt-20 md:mt-10 "
         style={{ backgroundImage: `url('${bgImage}')` }}
       >
         <div
@@ -41,11 +41,11 @@ export default async function Page({
             soundId={sound.soundId}
           />
         </div>
-        <h1 className="text-3xl md:text-6xl font-bold">{sound.title}</h1>
+        <h1 className="text-2xl md:text-5xl font-bold">{sound.title}</h1>
       </div>
       <div className="mt-10">
         <h2 className="text-2xl font-semibold mb-4">Recommended Sounds</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {recommendedSounds?.map((audio, i) => (
             // <div
             //   key={recSound._id}

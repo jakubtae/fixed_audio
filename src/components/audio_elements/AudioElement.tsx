@@ -84,6 +84,7 @@ const AudioElement = ({
       className={containerClasses}
       style={{ backgroundImage: `url('${bgImage}')` }}
       onClick={() => {
+        console.log("Playing sound:", { title, soundId, type });
         playSound({ src: audioUrl, soundId, artist: type, title });
       }}
     >
